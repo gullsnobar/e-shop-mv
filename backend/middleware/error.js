@@ -4,6 +4,9 @@ module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.message = err.message || "Internal server Error";
 
+  // Log full error for server-side debugging
+  console.error("[ErrorHandler]", err.stack || err);
+
   // wrong mongodb id error
   if (err.name === "CastError") {
     const message = `Resources not found with this id.. Invalid ${err.path}`;

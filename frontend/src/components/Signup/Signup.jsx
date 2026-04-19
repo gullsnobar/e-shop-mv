@@ -78,6 +78,8 @@ const SignUp = () => {
             </label>
 
             <input
+              id="signup-name"
+              name="name"
               type="text"
               required
               value={name}
@@ -95,6 +97,8 @@ const SignUp = () => {
             </label>
 
             <input
+              id="signup-email"
+              name="email"
               type="email"
               required
               value={email}
@@ -114,12 +118,15 @@ const SignUp = () => {
             <div className="relative mt-2">
 
               <input
+                id="signup-password"
+                name="password"
                 type={visible ? "text":"password"}
                 required
                 value={password}
                 onChange={(e)=>setPassword(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg
                 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                autoComplete="new-password"
               />
 
               <div

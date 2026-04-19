@@ -36,3 +36,43 @@
     transform: rotate(360deg);
   }
 }
+
+/* Hide browser-native password reveal/clear icons so only our custom eye shows */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}
+
+input::-webkit-credentials-auto-fill-button,
+input::-webkit-textfield-decoration-container,
+input::-webkit-clear-button {
+  display: none !important;
+}
+
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+
+/* Ensure credentials autofill button hidden in Blink-based browsers */
+input[type="password"]::-webkit-textfield-decoration-container {
+  display: none !important;
+}
+
+/* Additional selectors to cover more browser implementations */
+input[type="password"]::-webkit-clear-button,
+input[type="password"]::-webkit-credentials-auto-fill-button,
+input[type="password"]::-webkit-textfield-decoration-container-button,
+input[type="password"]::-webkit-password-toggle-button,
+input::-webkit-password-toggle-button,
+input::-webkit-credentials-auto-fill-button,
+input::-webkit-clear-button {
+  display: none !important;
+  -webkit-appearance: none !important;
+}
+
+/* Fallback: hide any appearance that could show native controls */
+input[type="password"] {
+  -webkit-appearance: none;
+  appearance: none;
+}
