@@ -59,6 +59,8 @@ const Login = () => {
             </label>
 
             <input
+              id="login-email"
+              name="email"
               type="email"
               required
               value={email}
@@ -78,12 +80,15 @@ const Login = () => {
             <div className="relative mt-2">
 
               <input
+                id="login-password"
+                name="password"
                 type={visible ? "text":"password"}
                 required
                 value={password}
                 onChange={(e)=>setPassword(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg
                 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                autoComplete="current-password"
               />
 
               <div
