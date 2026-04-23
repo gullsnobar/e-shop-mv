@@ -7,8 +7,14 @@
     "dev": "nodemon backend/server.js"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.11.2",
     "bcryptjs": "^3.0.3",
-    "nodemailer": "^8.0.5"
+    "nodemailer": "^8.0.5",
+    "react-redux": "^9.2.0",
+    "react-toastify": "^11.1.0",
+    "redux": "^5.0.1",
+    "redux-thunk": "^3.1.0",
+    "redux-toolkit": "^1.1.2"
   },
   "devDependencies": {
     "nodemon": "^3.0.0"
