@@ -26,11 +26,15 @@ const Header = () => {
 
   return (
     <div className={styles.section}>
-      <div className="hidden 800px:flex items-center justify-between h-[50px] my-[20px]">
-        
+      <div className="hidden md:flex items-center justify-between py-4">
+
         {/* Logo */}
         <Link to="/">
-          <img src="/logo.png" alt="Logo" className="h-[40px]" />
+          <img
+            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAARMAAAC3CAMAAAAGjUrG..."
+            alt="logo"
+            className="h-[64px] rounded-full"
+          />
         </Link>
 
         {/* Search Bar */}
