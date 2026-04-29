@@ -1,32 +1,37 @@
 import React from "react";
+import styles from "../../../styles/styles";
 import { Link } from "react-router-dom";
-import styles from "../../styles/styles"; // make sure path is correct
 
 const Hero = () => {
   return (
     <div
-      className={`relative min-h-[70vh] 800px:min-h-[80vh] w-full bg-no-repeat bg-cover ${styles.normalFlex}`}
+      className={`relative min-h-[70vh] md:min-h-[88vh] w-full bg-center bg-cover flex items-center`}
       style={{
-        backgroundImage: "url('/path/to/your/image.jpg')",
+        backgroundImage:
+          "url(https://themes.rslahmed.dev/rafcart/assets/images/banner-2.jpg)",
       }}
     >
-      <div className={`${styles.section} w-[90%] 800px:w-[60%]`}>
-        <h1 className="text-[35px] leading-[1.2] 800px:text-[60px] text-[#3d3a3a] font-[600] capitalize">
-          Best Collection for <br /> Home Decoration
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-black/40"></div>
+
+      <div className={`${styles.section} w-[90%] md:w-[65%] relative`}>
+        <h1 className="text-[32px] md:text-[58px] font-bold leading-tight capitalize text-white">
+          Best Collection for <br />
+          <span className="bg-gradient-to-r from-indigo-400 to-purple-500 bg-clip-text text-transparent">
+            Home Decoration
+          </span>
         </h1>
 
-        <p className="pt-5 text-[16px] font-[Poppins] font-[300] text-[#00000b]">
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Magni et ut
-          suscipit molestias explicabo cumque optio cum soluta, laboriosam ab
-          neque id perferendis sint error aspernatur. Nihil eius rerum dolores
-          corporis esse ex alias, minima nemo tempora aliquid sint vero.
+        <p className="mt-5 text-[16px] md:text-[18px] text-gray-200 leading-relaxed">
+          Discover premium home décor items designed to bring comfort and style
+          to your living space. Handpicked collections that fit every modern
+          lifestyle.
         </p>
 
-        <Link
-          to="/products"
-          className="inline-block bg-[#000] text-white font-[Poppins] font-[500] text-[16px] py-3 mt-5 px-6 rounded-md hover:bg-[#2a9d6a] transition duration-300"
-        >
-          Shop Now
+        <Link to="/products" className="inline-block">
+          <button className="mt-7 px-8 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-[17px] font-medium shadow-lg hover:scale-105 transition-transform">
+            Shop Now
+          </button>
         </Link>
       </div>
     </div>
