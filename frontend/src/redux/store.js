@@ -1,9 +1,13 @@
-import { configureStore } from "@reduxjs/toolkit"; // fixed package name
-import { userReducer } from "./reducers/user"; // correct import name
+import { configureStore } from "@reduxjs/toolkit";
+import { userReducer } from "./reducers/user";
+import wishlistReducer from "./reducers/wishlist";
+import { cartReducer } from "./reducers/cart";
 
 const Store = configureStore({
   reducer: {
-    user: userReducer, // fixed colon (not semicolon)
+    user: userReducer,
+    wishlist: wishlistReducer,
+    cart: cartReducer,
   },
 });
 

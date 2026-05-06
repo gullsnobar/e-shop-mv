@@ -7,10 +7,10 @@ const ErrorHandler = require("../utils/ErrorHandler.js");
 const fs = require("fs");
 const sendMail = require("../utils/sendMail.js");
 const jwt = require("jsonwebtoken");
-const catchAsyncError = require("../middleware/catchAsyncError.js");
+const catchAsyncError = require("../utils/catchAsyncErrors.js");
 const sendToken = require("../utils/jwtToken.js");
 const { isAuthenticated, isAdmin } = require("../middleware/auth.js");
-const cloudinary = require("../cloudinary.js");
+const cloudinary = require("../cloudinary");
 
 // -------------------------------------------------------
 // Create Activation Token
@@ -33,7 +33,7 @@ router.post("/create-user", upload.single("file"), async (req, res, next) => {
       return next(new ErrorHandler("User already exists", 400));
     }
 
-    const uploadStream = cloudinary.v2.uploader.upload_stream(
+    const uploadStream = cloudinary.uploader.upload_stream(
       { folder: "avatars" },
       async (error, result) => {
         if (error) return next(new ErrorHandler(error.message, 500));

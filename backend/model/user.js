@@ -50,7 +50,7 @@ const userSchema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: Date.now,   // ✅ Fixed: Date.now (not Date.now())
+    default: Date.now,   // Fixed: Date.now (not Date.now())
   },
   resetPasswordToken: String,
   resetPasswordTime: Date,

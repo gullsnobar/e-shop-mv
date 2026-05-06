@@ -7,7 +7,8 @@ import {
   AiOutlineSearch,
   AiOutlineShoppingCart,
 } from "react-icons/ai";
-import { IoArrowForward, IoChevronDown } from "react-icons/io";
+import { IoArrowForward } from "react-icons/io5";
+import { IoChevronDown } from "react-icons/io";
 import { BiMenuAltLeft } from "react-icons/bi";
 import { CgProfile } from "react-icons/cg";
 import DropDown from "./DropDown";

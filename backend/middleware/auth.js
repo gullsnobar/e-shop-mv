@@ -1,10 +1,10 @@
 const ErrorHandler = require("../utils/ErrorHandler");
-const  catchAsyncErrors = require("../utils/catchAsyncErrors");
+const catchAsyncError = require("../utils/catchAsyncErrors");
 const jwt = require("jsonwebtoken");
 const User = require("../model/user");
 
 
-exports.isAuthenticated = catchAsyncErrors(async(req, res, next) => {
+exports.isAuthenticated = catchAsyncError(async(req, res, next) => {
   const { token } = req.cookies;
 
   if (!token) {
@@ -16,3 +16,14 @@ exports.isAuthenticated = catchAsyncErrors(async(req, res, next) => {
   req.user = await User.findById(decodedData.id);
   next();
 });
+
+exports.isAdmin = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new ErrorHandler(`${req.user.role} is not allowed to access this resource`, 403)
+      );
+    }
+    next();
+  };
+};
