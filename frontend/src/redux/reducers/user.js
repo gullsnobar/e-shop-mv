@@ -1,4 +1,4 @@
-import { createReducer } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   isAuthenticated: false,
@@ -7,22 +7,28 @@ const initialState = {
   error: null,
 };
 
-export const userReducer = createReducer(initialState, (builder) => {
-  builder
-    .addCase("LoadUserRequest", (state) => {
+const userSlice = createSlice({
+  name: "user",
+  initialState,
+  reducers: {
+    loadUserRequest: (state) => {
       state.loading = true;
-    })
-    .addCase("LoadUserSuccess", (state, action) => {
+    },
+    loadUserSuccess: (state, action) => {
       state.isAuthenticated = true;
       state.loading = false;
       state.user = action.payload;
-    })
-    .addCase("LoadUserFail", (state, action) => {
+    },
+    loadUserFail: (state, action) => {
       state.loading = false;
       state.error = action.payload;
       state.isAuthenticated = false;
-    })
-    .addCase("clearErrors", (state) => {
+    },
+    clearErrors: (state) => {
       state.error = null;
-    });
+    },
+  },
 });
+
+export const { loadUserRequest, loadUserSuccess, loadUserFail, clearErrors } = userSlice.actions;
+export const userReducer = userSlice.reducer;

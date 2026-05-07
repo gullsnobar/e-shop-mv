@@ -1,19 +1,13 @@
-import { addToWishlist, removeFromWishlist,} from "../reducers/wishlist";
+import { addToWishlist, removeFromWishlist } from "../reducers/wishlist";
 
 //add to wishlist
-export const addToWishlistFun = (data) => async (dispatch, getState) => {
+export const addToWishlistFun = (data) => (dispatch) => {
   dispatch(addToWishlist(data));
- 
-  localStorage.setItem("wishlistItems", JSON.stringify(getState().wishlist.wishlist));
   return data;
 };
 
-
-
 //remove from wishlist
-export const removeFromWishlistFun = (data) => async (dispatch, getState) => {
+export const removeFromWishlistFun = (data) => (dispatch) => {
   dispatch(removeFromWishlist(data._id));
-
-  localStorage.setItem("wishlistItems", JSON.stringify(getState().wishlist.wishlist));
   return data;
 };

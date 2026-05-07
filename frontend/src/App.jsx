@@ -3,15 +3,13 @@ import LoginPage from "./pages/Login.jsx";
 import SignupPage from "./pages/Signup.jsx";
 import { ActivationPage, HomePage } from "./Routes.js";
 import "./App.css";
-import { ToastContainer, toast } from "react-toastify"; // added toast
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import { server } from "./server.js";
 import { useEffect } from "react";
 
-
 const App = () => {
-
   useEffect(() => {
     axios.get(`${server}/user/me`, { withCredentials: true })
       .then((res) => {
@@ -28,17 +26,13 @@ const App = () => {
     <div>
       <BrowserRouter>
         <Routes>
-          
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
-
-          {/* dynamic param fixed */}
           <Route path="/activation/:activation_token" element={<ActivationPage />} />
         </Routes>
       </BrowserRouter>
 
-      {/* now properly used */}
       <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );

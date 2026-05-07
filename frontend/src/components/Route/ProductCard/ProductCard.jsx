@@ -8,7 +8,7 @@ import {
   AiOutlineHeart,
   AiOutlineShoppingCart,
 } from "react-icons/ai";
-import { backend_url } from "../../../server.js";
+import { server } from "../../../server.js";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addToWishlistFun,
@@ -69,9 +69,9 @@ const ProductCard = ({ data, isEvent }) => {
           }
         >
           <img
-            src={`${data.images[0]?.url}`}
+            src={data?.images?.[0]?.url || "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"}
             className="w-full h-[180px] object-contain transform group-hover:scale-105 transition duration-300"
-            alt=""
+            alt={data?.name || "product"}
           />
         </Link>
 

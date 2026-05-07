@@ -1,7 +1,11 @@
-// Placeholder for cart actions
-export const addToCartFun = (item) => {
-  return {
-    type: "ADD_TO_CART",
-    payload: item,
-  };
+import { addToCart, removeFromCart } from "../reducers/cart";
+
+export const addToCartFun = (item) => (dispatch) => {
+  dispatch(addToCart(item));
+  return item;
+};
+
+export const removeFromCartFun = (id) => (dispatch) => {
+  dispatch(removeFromCart(id));
+  return id;
 };

@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 
 const FeaturedProduct = () => {
 
-  const {allProducts}= useSelector((state)=> state.product);
+  const allProducts = useSelector((state) => state.product?.allProducts) || [];
 
   return (
     <div>

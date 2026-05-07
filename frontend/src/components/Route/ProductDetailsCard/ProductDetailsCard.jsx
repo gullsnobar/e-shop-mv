@@ -115,8 +115,8 @@ const ProductDetailsCard = ({ setOpen, data }) => {
               <div className="w-full md:w-[50%] flex flex-col items-center">
                 <div className="w-full bg-gray-50 rounded-xl flex items-center justify-center p-4">
                   <img
-                    src={`${data?.images[0]?.url}`}
-                    alt=""
+                    src={data?.images?.[0]?.url || "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"}
+                    alt={data?.name || "product"}
                     className="max-h-[250px] object-contain"
                   />
                 </div>
@@ -125,11 +125,15 @@ const ProductDetailsCard = ({ setOpen, data }) => {
                   to={`/shop/preview/${data.shop._id}`}
                   className="flex items-center mt-4 w-full bg-gray-50 p-3 rounded-xl hover:shadow transition"
                 >
-                  <img
-                    src={`${data?.shop.avatar?.url}`}
-                    alt=""
-                    className="w-[50px] h-[50px] rounded-full mr-3"
-                  />
+                  {data?.shop?.avatar?.url ? (
+                    <img
+                      src={data.shop.avatar.url}
+                      alt={data.shop.name || "shop"}
+                      className="w-[50px] h-[50px] rounded-full mr-3"
+                    />
+                  ) : (
+                    <div className="w-[50px] h-[50px] rounded-full mr-3 bg-gray-200" />
+                  )}
                   <div>
                     <h3 className="text-[16px] font-semibold text-gray-800 hover:underline">
                       {data.shop.name}
