@@ -3,9 +3,9 @@ import SignupPage from "./pages/Signup";
 import ActivationPage from "./pages/ActivationPage";
 import HomePage from "./pages/HomePage";
 import ProductsPage from "./pages/ProductsPage"
-import BestSellingPage from "../src/pages/BestSellingPage"
-import EventsPage from "../src/page/EventsPage"
-import FAQPage from "../src/page/FAQPage"
+import BestSellingPage from "./pages/BestSellingPage"
+import EventsPage from "./pages/EventsPage"
+import FAQPage from "./pages/FAQPage"
 
 export { 
     HomePage,
