@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/Login.jsx";
 import SignupPage from "./pages/Signup.jsx";
-import { ActivationPage, HomePage } from "./Routes.js";
+import { ActivationPage, HomePage, ProductsPage, EventsPage, BestSellingPage } from "./Routes.js";
 import "./App.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -30,6 +30,10 @@ const App = () => {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/activation/:activation_token" element={<ActivationPage />} />
+          <Route path="/products" element={<ProductsPage />} />
+          <Route path="/best-selling" element={<BestSellingPage />} />
+          <Route path="/events" element={<EventsPage />} />
+
         </Routes>
       </BrowserRouter>
 

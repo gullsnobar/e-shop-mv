@@ -40,7 +40,7 @@ const ProductsPage = () => {
                         ))}
 
                     {data && data.length === 0 ? (
-                        <h1></h1>
+                        <h1>No products found</h1>
                     ) : null}
 
                 </div>
