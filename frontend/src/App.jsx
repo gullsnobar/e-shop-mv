@@ -8,8 +8,16 @@ import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import { server } from "./server.js";
 import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { getAllProducts } from "./redux/actions/products";
 
 const App = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getAllProducts());
+  }, [dispatch]);
+
   useEffect(() => {
     axios.get(`${server}/user/me`, { withCredentials: true })
       .then((res) => {
@@ -23,7 +31,7 @@ const App = () => {
   }, []);
 
   return (
-    <div>
+    <div className="overflow-x-hidden">
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<HomePage />} />

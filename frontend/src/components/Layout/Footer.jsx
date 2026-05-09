@@ -1,120 +1,121 @@
 import React from "react";
 import {
   AiFillFacebook,
-  AiOutlineInstagram,
+  AiFillInstagram,
+  AiFillYoutube,
   AiOutlineTwitter,
-  AiOutlineYoutube,
 } from "react-icons/ai";
+import { Link } from "react-router-dom";
 import {
   footercompanyLinks,
   footerProductLinks,
   footerSupportLinks,
 } from "../../static/data";
-import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <div className="bg-gradient-to-r from-emerald-600 to-teal-700 text-white">
-      {/* Subscribe Section */}
-      <div className="md:flex md:justify-between md:items-center sm:px-12 px-6 py-10 border-b border-teal-500/40">
-        <h1 className="lg:text-3xl text-2xl font-semibold mb-6 md:mb-0">
-          <span className="text-yellow-300">Subscribe</span> for latest news,  
-          <br className="hidden sm:block" /> events & exclusive offers
+    <div className="bg-[#000] text-white">
+      <div className="md:flex md:justify-between md:items-center sm:px-12 px-4 bg-[#342ac8] py-7">
+        <h1 className="lg:text-4xl text-3xl md:mb-0 mb-6 lg:leading-normal font-semibold md:w-2/5">
+          <span className="text-[#56d879]">Subscribe</span> us for get news{" "}
+          <br />
+          events and offers
         </h1>
-        <div className="flex flex-col sm:flex-row items-center w-full md:w-auto">
+        <div>
           <input
             type="email"
             required
             placeholder="Enter your email..."
-            className="text-gray-800 bg-white sm:w-72 w-full sm:mr-3 mb-4 sm:mb-0 py-2.5 rounded-md px-3 outline-none"
+            className="bg-white text-gray-800 placeholder-gray-400 border border-gray-200
+                sm:w-72 w-full sm:mr-5 mr-1 lg:mb-0 mb-4 py-2.5 rounded px-3 focus:outline-none focus:ring-2 focus:ring-[#56d879]"
           />
-          <button className="bg-yellow-400 hover:bg-yellow-500 duration-300 px-6 py-2.5 rounded-md text-gray-900 font-medium w-full sm:w-auto">
-            Subscribe
+          <button className="bg-[#56d879] hover:bg-teal-500 duration-300 px-5 py-2.5 rounded-md text-white md:w-auto w-full">
+            Submit
           </button>
         </div>
       </div>
-
-      {/* Links Section */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 px-6 py-12 sm:px-12">
-        {/* Logo + Socials */}
-        <div>
+      <div className="grid grid-cols-1 sm:gird-cols-3 lg:grid-cols-4 gap-6 sm:px-8 px-5 py-16 sm:text-center">
+        <ul className="px-5 text-center sm:text-start flex sm:block flex-col items-center">
           <img
             src="https://shopo.quomodothemes.website/assets/images/logo.svg"
-            alt="Logo"
-            className="mb-4 brightness-0 invert"
+            alt=""
+            style={{ filter: "brightness(0) invert(1)" }}
           />
-          <p className="text-gray-200 text-sm leading-6">
-            Your one-stop shop for quality products and great deals.
-          </p>
-          <div className="flex space-x-4 mt-5">
-            <AiFillFacebook size={24} className="cursor-pointer hover:text-yellow-300" />
-            <AiOutlineTwitter size={24} className="cursor-pointer hover:text-yellow-300" />
-            <AiOutlineInstagram size={24} className="cursor-pointer hover:text-yellow-300" />
-            <AiOutlineYoutube size={24} className="cursor-pointer hover:text-yellow-300" />
+          <br />
+          <p>The home and elements needeed to create beatiful products.</p>
+          <div className="flex items-center mt-[15px]">
+            <AiFillFacebook size={25} className="cursor-pointer" />
+            <AiOutlineTwitter
+              size={25}
+              style={{ marginLeft: "15px", cursor: "pointer" }}
+            />
+            <AiFillInstagram
+              size={25}
+              style={{ marginLeft: "15px", cursor: "pointer" }}
+            />
+            <AiFillYoutube
+              size={25}
+              style={{ marginLeft: "15px", cursor: "pointer" }}
+            />
           </div>
-        </div>
+        </ul>
 
-        {/* Company */}
-        <div>
-          <h2 className="text-lg font-semibold mb-3">Company</h2>
-          <ul className="space-y-2">
-            {footerProductLinks.map((link) => (
-              <li key={link.name}>
-                <Link
-                  to={link.link}
-                  className="text-gray-200 hover:text-yellow-300 duration-300 text-sm"
-                >
-                  {link.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <ul className="text-center sm:text-start">
+          <h1 className="mb-1 font-semibold">Company</h1>
+          {footerProductLinks.map((link,index) => (
+            <li key={index}>
+              <Link
+                className="text-gray-400 hover:text-teal-400 duration-300
+                   text-sm cursor-pointer leading-6"
+                to={link.link}
+              >
+                {link.name}
+              </Link>
+            </li>
+          ))}
+        </ul>
 
-        {/* Shop */}
-        <div>
-          <h2 className="text-lg font-semibold mb-3">Shop</h2>
-          <ul className="space-y-2">
-            {footercompanyLinks.map((link) => (
-              <li key={link.name}>
-                <Link
-                  to={link.link}
-                  className="text-gray-200 hover:text-yellow-300 duration-300 text-sm"
-                >
-                  {link.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <ul className="text-center sm:text-start">
+          <h1 className="mb-1 font-semibold">Shop</h1>
+          {footercompanyLinks.map((link,index) => (
+            <li key={index}>
+              <Link
+                className="text-gray-400 hover:text-teal-400 duration-300
+                   text-sm cursor-pointer leading-6"
+                to={link.link}
+              >
+                {link.name}
+              </Link>
+            </li>
+          ))}
+        </ul>
 
-        {/* Support */}
-        <div>
-          <h2 className="text-lg font-semibold mb-3">Support</h2>
-          <ul className="space-y-2">
-            {footerSupportLinks.map((link) => (
-              <li key={link.name}>
-                <Link
-                  to={link.link}
-                  className="text-gray-200 hover:text-yellow-300 duration-300 text-sm"
-                >
-                  {link.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <ul className="text-center sm:text-start">
+          <h1 className="mb-1 font-semibold">Support</h1>
+          {footerSupportLinks.map((link,index) => (
+            <li key={index}>
+              <Link
+                className="text-gray-400 hover:text-teal-400 duration-300
+                   text-sm cursor-pointer leading-6"
+                to={link.link}
+              >
+                {link.name}
+              </Link>
+            </li>
+          ))}
+        </ul>
       </div>
 
-      {/* Bottom Bar */}
-      <div className="border-t border-teal-500/40 text-gray-200 text-sm py-6 px-6 sm:px-12 flex flex-col md:flex-row items-center justify-between">
-        <span>© {new Date().getFullYear()} Ali’s Store. All rights reserved.</span>
-        <span className="mt-2 md:mt-0">Terms • Privacy Policy</span>
-        <div className="mt-4 md:mt-0">
+      <div
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10
+         text-center pt-2 text-gray-400 text-sm pb-8"
+      >
+        <span>© 2020 Becodemy. All rights reserved.</span>
+        <span>Terms · Privacy Policy</span>
+        <div className="sm:block flex items-center justify-center w-full">
           <img
             src="https://hamart-shop.vercel.app/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Ffooter-payment.a37c49ac.png&w=640&q=75"
-            alt="Payments"
-            className="w-[200px]"
+            alt=""
           />
         </div>
       </div>

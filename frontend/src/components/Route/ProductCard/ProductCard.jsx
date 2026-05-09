@@ -1,58 +1,72 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import styles from "../../../styles/styles";
-import ProductDetailsCard from "../ProductDetailsCard/ProductDetailsCard.jsx";
+import React, { useState } from "react";
 import {
   AiFillHeart,
+  AiFillStar,
   AiOutlineEye,
   AiOutlineHeart,
   AiOutlineShoppingCart,
+  AiOutlineStar,
 } from "react-icons/ai";
-import { server } from "../../../server.js";
+import { Link } from "react-router-dom";
+import styles from "../../../styles/styles";
 import { useDispatch, useSelector } from "react-redux";
+import ProductDetailsCard from "../ProductDetailsCard/ProductDetailsCard";
 import {
-  addToWishlistFun,
-  removeFromWishlistFun,
-} from "../../../redux/actions/wishlist.js";
+  addToWishlist,
+  removeFromWishlist,
+} from "../../../redux/actions/wishlist";
+import { useEffect } from "react";
+import { addTocart } from "../../../redux/actions/cart";
 import { toast } from "react-toastify";
-import { addToCartFun } from "../../../redux/actions/cart.js";
-import Ratings from "../../products/Ratings.jsx";
+import Ratings from "../../Products/Ratings";
 
 const ProductCard = ({ data, isEvent }) => {
+  const { wishlist } = useSelector((state) => state.wishlist);
+  const { cart } = useSelector((state) => state.cart);
   const [click, setClick] = useState(false);
   const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
-  const { wishlist } = useSelector((state) => state.wishlist);
-  const { cart } = useSelector((state) => state.cart);
+
+  // Normalize field names (backend uses camelCase, static data uses snake_case)
+  const product = data || {};
+  const discountPrice = product.discountPrice ?? product.discount_price ?? 0;
+  const originalPrice = product.originalPrice ?? product.price ?? 0;
+  const soldOut = product.sold_out ?? product.total_sell ?? 0;
+  const ratings = product.ratings ?? product.rating ?? 0;
+  const imageUrl = product.images?.[0]?.url ?? "";
+  const shopId = product.shop?._id || product.shop?.id || product.id || "#";
+  const shopName = product.shop?.name || "Unknown Shop";
+  const productName = product.name || "Unnamed Product";
+  const productId = product._id || product.id || "";
 
   useEffect(() => {
-    if (wishlist && wishlist.find((item) => item._id === data._id)) {
+    if (wishlist && wishlist.find((i) => i._id === productId)) {
       setClick(true);
     } else {
       setClick(false);
     }
-  }, [wishlist, data?._id]);
+  }, [wishlist, productId]);
 
   const removeFromWishlistHandler = (data) => {
     setClick(!click);
-    dispatch(removeFromWishlistFun(data));
+    dispatch(removeFromWishlist(data));
   };
 
   const addToWishlistHandler = (data) => {
     setClick(!click);
-    dispatch(addToWishlistFun(data));
+    dispatch(addToWishlist(data));
   };
 
   const addToCartHandler = (id) => {
-    const isItemExist = cart && cart.find((i) => i._id == id);
-    if (isItemExist) {
+    const isItemExists = cart && cart.find((i) => i._id === id);
+    if (isItemExists) {
       toast.error("Item already in cart!");
     } else {
-      if (data.stock < 1) {
+      if ((product.stock ?? 0) < 1) {
         toast.error("Product stock limited!");
       } else {
-        const cartData = { ...data, qty: 1 };
-        dispatch(addToCartFun(cartData));
+        const cartData = { ...product, qty: 1 };
+        dispatch(addTocart(cartData));
         toast.success("Item added to cart successfully!");
       }
     }
@@ -60,97 +74,87 @@ const ProductCard = ({ data, isEvent }) => {
 
   return (
     <>
-      <div className="w-full h-[390px] bg-white rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 relative cursor-pointer overflow-hidden group">
-        <Link
-          to={
-            isEvent
-              ? `/product/${data._id}?isEvent=true`
-              : `/product/${data._id}`
-          }
-        >
-          <img
-            src={data?.images?.[0]?.url || "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"}
-            className="w-full h-[180px] object-contain transform group-hover:scale-105 transition duration-300"
-            alt={data?.name || "product"}
-          />
+      <div className="w-full h-[370px] bg-white rounded-lg shadow-sm p-3 relative cursor-pointer">
+        <div className="flex justify-end"></div>
+        <Link to={`${isEvent === true ? `/product/${productId}?isEvent=true` : `/product/${productId}`}`}>
+          {imageUrl ? (
+            <img
+              src={imageUrl}
+              alt={productName}
+              className="w-full h-[170px] object-contain"
+              onError={(e) => {
+                e.target.style.display = "none";
+                e.target.parentElement.innerHTML = `<div class="w-full h-[170px] flex items-center justify-center bg-gray-50 text-gray-400 text-sm rounded-md">No Image</div>`;
+              }}
+            />
+          ) : (
+            <div className="w-full h-[170px] flex items-center justify-center bg-gray-50 text-gray-400 text-sm rounded-md">
+              No Image
+            </div>
+          )}
+        </Link>
+        <Link to={`/shop/preview/${shopId}`}>
+          <h5 className={`${styles.shop_name}`}>{shopName}</h5>
+        </Link>
+        <Link to={`${isEvent === true ? `/product/${productId}?isEvent=true` : `/product/${productId}`}`}>
+          <h4 className="pb-3 font-[500]">
+            {productName.length > 40 ? productName.slice(0, 40) + "..." : productName}
+          </h4>
+
+          <div className="flex">
+            <Ratings rating={ratings} />
+          </div>
+
+          <div className="py-2 flex items-center justify-between">
+            <div className="flex">
+              <h5 className={`${styles.productDiscountPrice}`}>
+                {originalPrice === 0 ? originalPrice : discountPrice}$
+              </h5>
+              <h4 className={`${styles.price}`}>
+                {originalPrice > 0 ? originalPrice + " $" : null}
+              </h4>
+            </div>
+            <span className="font-[400] text-[17px] text-[#68d284]">
+              {soldOut} sold
+            </span>
+          </div>
         </Link>
 
-        <div className="px-2">
-          <Link to={`/shop/preview/${data?.shop._id}`}>
-            <h5 className="text-[14px] font-medium text-blue-600 hover:underline">
-              {data.shop.shopName}
-            </h5>
-          </Link>
-
-          <Link
-            to={
-              isEvent
-                ? `/product/${data._id}?isEvent=true`
-                : `/product/${data._id}`
-            }
-          >
-            <h4 className="font-semibold text-gray-800 mt-1 text-[15px] leading-tight line-clamp-2">
-              {data.name}
-            </h4>
-            <div className="flex mt-1">
-              <Ratings rating={data?.ratings} />
-            </div>
-
-            <div className="py-2 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-lg font-semibold text-[14px]">
-                  {data.discountPrice === 0
-                    ? data.totalPrice
-                    : data.discountPrice}
-                  $
-                </span>
-                {data.originalPrice && (
-                  <span className="line-through text-gray-500 text-[13px]">
-                    {data.originalPrice}$
-                  </span>
-                )}
-              </div>
-              <span className="font-medium text-[14px] text-green-500">
-                {data?.sold_out} sold
-              </span>
-            </div>
-          </Link>
-        </div>
-
         {/* side options */}
-        <div className="absolute top-4 right-3 flex flex-col gap-3 bg-white/70 backdrop-blur-sm p-2 rounded-xl shadow-md opacity-0 group-hover:opacity-100 transition">
+        <div>
           {click ? (
             <AiFillHeart
               size={22}
-              className="cursor-pointer text-red-500"
+              className="cursor-pointer absolute right-2 top-5"
               onClick={() => removeFromWishlistHandler(data)}
+              color={click ? "red" : "#333"}
               title="Remove from wishlist"
             />
           ) : (
             <AiOutlineHeart
               size={22}
-              className="cursor-pointer text-gray-600 hover:text-red-500 transition"
+              className="cursor-pointer absolute right-2 top-5"
               onClick={() => addToWishlistHandler(data)}
+              color={click ? "red" : "#333"}
               title="Add to wishlist"
             />
           )}
-
           <AiOutlineEye
-            size={23}
-            className="cursor-pointer text-gray-600 hover:text-blue-500 transition"
+            size={22}
+            className="cursor-pointer absolute right-2 top-14"
             onClick={() => setOpen(!open)}
+            color="#333"
             title="Quick view"
           />
-
           <AiOutlineShoppingCart
-            size={24}
-            className="cursor-pointer text-gray-700 hover:text-green-600 transition"
-            onClick={() => addToCartHandler(data._id)}
+            size={25}
+            className="cursor-pointer absolute right-2 top-24"
+            onClick={() => addToCartHandler(productId)}
+            color="#444"
             title="Add to cart"
           />
+          {open ? <ProductDetailsCard setOpen={setOpen} data={data} /> : null}
         </div>
-
-        {open ? <ProductDetailsCard setOpen={setOpen} data={data} /> : null}
       </div>
     </>
   );

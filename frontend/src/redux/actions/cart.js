@@ -1,11 +1,20 @@
-import { addToCart, removeFromCart } from "../reducers/cart";
+// add to cart
+export const addTocart = (data) => async (dispatch, getState) => {
+  dispatch({
+    type: "addToCart",
+    payload: data,
+  });
 
-export const addToCartFun = (item) => (dispatch) => {
-  dispatch(addToCart(item));
-  return item;
+  localStorage.setItem("cartItems", JSON.stringify(getState().cart.cart));
+  return data;
 };
 
-export const removeFromCartFun = (id) => (dispatch) => {
-  dispatch(removeFromCart(id));
-  return id;
+// remove from cart
+export const removeFromCart = (data) => async (dispatch, getState) => {
+  dispatch({
+    type: "removeFromCart",
+    payload: data._id,
+  });
+  localStorage.setItem("cartItems", JSON.stringify(getState().cart.cart));
+  return data;
 };

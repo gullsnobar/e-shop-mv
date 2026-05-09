@@ -1,63 +1,35 @@
 import React, { useEffect, useState } from "react";
-import { RxCross1 } from "react-icons/rx";
-import { toast } from "react-toastify";
-import styles from "../../../styles/styles";
 import {
   AiFillHeart,
   AiOutlineHeart,
   AiOutlineMessage,
   AiOutlineShoppingCart,
 } from "react-icons/ai";
-import { Link, useNavigate } from "react-router-dom";
+import { RxCross1 } from "react-icons/rx";
+import { Link } from "react-router-dom";
+import styles from "../../../styles/styles";
 import { useDispatch, useSelector } from "react-redux";
-import { addToCartFun } from "../../../redux/actions/cart";
+import { toast } from "react-toastify";
+import { addTocart } from "../../../redux/actions/cart";
 import {
-  addToWishlistFun,
-  removeFromWishlistFun,
+  addToWishlist,
+  removeFromWishlist,
 } from "../../../redux/actions/wishlist";
-import axios from "axios";
-import { server } from "../../../server";
 
 const ProductDetailsCard = ({ setOpen, data }) => {
   const { cart } = useSelector((state) => state.cart);
   const { wishlist } = useSelector((state) => state.wishlist);
-  const { user, isAuthenticated } = useSelector((state) => state.user);
-  const navigate= useNavigate();
-
+  const dispatch = useDispatch();
   const [count, setCount] = useState(1);
   const [click, setClick] = useState(false);
-  const dispatch = useDispatch();
+  //   const [select, setSelect] = useState(false);
 
-  const handleMessageSubmit = async () => {
-    if (isAuthenticated == false) {
-      toast.error("please login to send message");
-      return;
-    }
-
-    const groupTitle = data.shop._id + user._id;
-    const userId = user._id;
-    const sellerId = data.shop._id;
-
-    if (isAuthenticated) {
-      await axios
-        .post(`${server}/conversation/create-new-conversation`, {
-          groupTitle,
-          userId,
-          sellerId,
-        })
-        .then((res) => {
-          navigate(`/inbox?${res.data.conversation._id}`);
-        })
-        .catch((error) => {
-          toast.error(error.response.data.message);
-        });
-    } else {
-      toast.error("please login to continue");
-    }
-  };
+  const handleMessageSubmit = () => {};
 
   const decrementCount = () => {
-    if (count > 1) setCount(count - 1);
+    if (count > 1) {
+      setCount(count - 1);
+    }
   };
 
   const incrementCount = () => {
@@ -65,166 +37,137 @@ const ProductDetailsCard = ({ setOpen, data }) => {
   };
 
   const addToCartHandler = (id) => {
-    const isItemExist = cart && cart.find((i) => i._id == id);
-    if (isItemExist) {
+    const isItemExists = cart && cart.find((i) => i._id === id);
+    if (isItemExists) {
       toast.error("Item already in cart!");
     } else {
       if (data.stock < count) {
         toast.error("Product stock limited!");
       } else {
         const cartData = { ...data, qty: count };
-        dispatch(addToCartFun(cartData));
+        dispatch(addTocart(cartData));
         toast.success("Item added to cart successfully!");
       }
     }
   };
 
   useEffect(() => {
-    if (wishlist && wishlist.find((item) => item._id === data._id)) {
+    if (wishlist && wishlist.find((i) => i._id === data._id)) {
       setClick(true);
     } else {
       setClick(false);
     }
-  }, [wishlist, data._id]);
+  }, [wishlist]);
 
   const removeFromWishlistHandler = (data) => {
     setClick(!click);
-    dispatch(removeFromWishlistFun(data));
+    dispatch(removeFromWishlist(data));
   };
 
   const addToWishlistHandler = (data) => {
     setClick(!click);
-    dispatch(addToWishlistFun(data));
+    dispatch(addToWishlist(data));
   };
 
   return (
     <div className="bg-[#fff]">
       {data ? (
-        <div className="w-full fixed inset-0 bg-black/40 z-40 flex items-center justify-center">
-          <div className="w-[90%] md:w-[65%] h-[90vh] md:h-[80vh] bg-white rounded-2xl shadow-xl relative p-5 overflow-y-auto transform transition-all scale-100">
-            {/* Close Button */}
-            <button
-              className="absolute right-4 top-4 w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition"
+        <div className="fixed w-full h-screen top-0 left-0 bg-[#00000030] z-40 flex items-center justify-center">
+          <div className="w-[90%] 800px:w-[60%] h-[90vh] overflow-y-scroll 800px:h-[75vh] bg-white rounded-md shadow-sm relative p-4">
+            <RxCross1
+              size={30}
+              className="absolute right-3 top-3 z-50"
               onClick={() => setOpen(false)}
-            >
-              <RxCross1 size={20} className="text-gray-700" />
-            </button>
+            />
 
-            <div className="w-full flex flex-col md:flex-row gap-6">
-              {/* Left Section */}
-              <div className="w-full md:w-[50%] flex flex-col items-center">
-                <div className="w-full bg-gray-50 rounded-xl flex items-center justify-center p-4">
-                  <img
-                    src={data?.images?.[0]?.url || "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"}
-                    alt={data?.name || "product"}
-                    className="max-h-[250px] object-contain"
-                  />
-                </div>
-
-                <Link
-                  to={`/shop/preview/${data.shop._id}`}
-                  className="flex items-center mt-4 w-full bg-gray-50 p-3 rounded-xl hover:shadow transition"
-                >
-                  {data?.shop?.avatar?.url ? (
+            <div className="block w-full 800px:flex">
+              <div className="w-full 800px:w-[50%]">
+                <img src={`${data.images && data.images[0]?.url}`} alt="" />
+                <div className="flex">
+                  <Link to={`/shop/preview/${data.shop._id}`} className="flex">
                     <img
-                      src={data.shop.avatar.url}
-                      alt={data.shop.name || "shop"}
-                      className="w-[50px] h-[50px] rounded-full mr-3"
+                      src={`${data.images && data.images[0]?.url}`}
+                      alt=""
+                      className="w-[50px] h-[50px] rounded-full mr-2"
                     />
-                  ) : (
-                    <div className="w-[50px] h-[50px] rounded-full mr-3 bg-gray-200" />
-                  )}
-                  <div>
-                    <h3 className="text-[16px] font-semibold text-gray-800 hover:underline">
-                      {data.shop.name}
-                    </h3>
-                    <h5 className="text-[14px] text-gray-500">
-                      ({data.shop.ratings}) Ratings
-                    </h5>
-                  </div>
-                </Link>
-
-                <button
-                  className="mt-4 w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl py-2 font-medium hover:opacity-90 transition flex items-center justify-center gap-1"
+                    <div>
+                      <h3 className={`${styles.shop_name}`}>
+                        {data.shop.name}
+                      </h3>
+                      <h5 className="pb-3 text-[15px]">{data?.ratings} Ratings</h5>
+                    </div>
+                  </Link>
+                </div>
+                <div
+                  className={`${styles.button} bg-[#000] mt-4 rounded-[4px] h-11`}
                   onClick={handleMessageSubmit}
                 >
-                  Send Message <AiOutlineMessage />
-                </button>
-
-                <h5 className="text-[15px] text-red-500 mt-3">
-                  ({data.total_sell}) Sold out
-                </h5>
+                  <span className="text-[#fff] flex items-center">
+                    Send Message <AiOutlineMessage className="ml-1" />
+                  </span>
+                </div>
+                <h5 className="text-[16px] text-[red] mt-5">(50) Sold out</h5>
               </div>
 
-              {/* Right Section */}
-              <div className="w-full md:w-[50%] pt-3">
-                <h1 className="text-[22px] font-bold text-gray-800">
+              <div className="w-full 800px:w-[50%] pt-5 pl-[5px] pr-[5px]">
+                <h1 className={`${styles.productTitle} text-[20px]`}>
                   {data.name}
                 </h1>
-                <p className="text-gray-600 mt-2 text-[15px] leading-relaxed">
-                  {data.description}
-                </p>
+                <p>{data.description}</p>
 
-                {/* Price */}
-                <div className="pt-4 flex items-center gap-3">
-                  <h4 className="text-[22px] font-bold text-indigo-600">
-                    {data.discount_price}$
+                <div className="flex pt-3">
+                  <h4 className={`${styles.productDiscountPrice}`}>
+                    {data.discountPrice}$
                   </h4>
-                  {data.price && (
-                    <h3 className="line-through text-gray-500 text-[16px]">
-                      {data.price}$
-                    </h3>
-                  )}
+                  <h3 className={`${styles.price}`}>
+                    {data.originalPrice ? data.originalPrice + "$" : null}
+                  </h3>
                 </div>
-
-                {/* Quantity + Wishlist */}
-                <div className="flex items-center mt-10 justify-between pr-3">
-                  {/* Quantity */}
-                  <div className="flex items-center">
+                <div className="flex items-center mt-12 justify-between pr-3">
+                  <div>
                     <button
-                      className="bg-indigo-500 text-white font-bold rounded-l px-4 py-2 hover:bg-indigo-600 transition"
+                      className="bg-gradient-to-r from-teal-400 to-teal-500 text-white font-bold rounded-l px-4 py-2 shadow-lg hover:opacity-75 transition duration-300 ease-in-out"
                       onClick={decrementCount}
                     >
                       -
                     </button>
-                    <span className="bg-gray-100 text-gray-800 font-medium px-4 py-[10px]">
+                    <span className="bg-gray-200 text-gray-800 font-medium px-4 py-[11px]">
                       {count}
                     </span>
                     <button
-                      className="bg-indigo-500 text-white font-bold rounded-r px-4 py-2 hover:bg-indigo-600 transition"
+                      className="bg-gradient-to-r from-teal-400 to-teal-500 text-white font-bold rounded-l px-4 py-2 shadow-lg hover:opacity-75 transition duration-300 ease-in-out"
                       onClick={incrementCount}
                     >
                       +
                     </button>
                   </div>
-
-                  {/* Wishlist */}
                   <div>
                     {click ? (
                       <AiFillHeart
-                        size={26}
-                        className="cursor-pointer text-red-500 hover:scale-110 transition"
+                        size={30}
+                        className="cursor-pointer"
                         onClick={() => removeFromWishlistHandler(data)}
+                        color={click ? "red" : "#333"}
                         title="Remove from wishlist"
                       />
                     ) : (
                       <AiOutlineHeart
-                        size={26}
-                        className="cursor-pointer text-gray-600 hover:text-red-500 hover:scale-110 transition"
+                        size={30}
+                        className="cursor-pointer"
                         onClick={() => addToWishlistHandler(data)}
                         title="Add to wishlist"
                       />
                     )}
                   </div>
                 </div>
-
-                {/* Add to Cart */}
-                <button
-                  className="mt-6 w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl py-3 font-medium hover:opacity-90 transition flex items-center justify-center gap-1"
+                <div
+                  className={`${styles.button} mt-6 rounded-[4px] h-11 flex items-center`}
                   onClick={() => addToCartHandler(data._id)}
                 >
-                  Add to Cart <AiOutlineShoppingCart />
-                </button>
+                  <span className="text-[#fff] flex items-center">
+                    Add to cart <AiOutlineShoppingCart className="ml-1" />
+                  </span>
+                </div>
               </div>
             </div>
           </div>

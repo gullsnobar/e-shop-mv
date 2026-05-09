@@ -1,41 +1,34 @@
 import React from 'react'
-import { useNavigation } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 const DropDown = ({categoriesData, setDropDown}) => {
-    const navigate = useNavigation();
+    const navigate = useNavigate();
     const submitHandler = (i) => {
         setDropDown(false);
         navigate(`/products?category=${i.title}`);
-        setDropDown(false);
         window.location.reload();
     };
-  return (
 
-    <div className='pb-4 w-[270px] bg-[#fff] absolute z-30 rounded-b-md shadow-sm'>
-        {
-            categoriesData && categoriesData.map((i, index) => (
+    return (
+        <div className='pb-2 w-[260px] bg-white absolute z-30 rounded-b-md shadow-lg border border-gray-100 top-full left-0 mt-1'>
+            {categoriesData && categoriesData.map((i, index) => (
                 <div
                     key={index}
-                    className='px-4 py-2 hover:bg-gray-100 cursor-pointer'
+                    className='flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 cursor-pointer transition-colors'
                     onClick={() => submitHandler(i)}
                 >
-
-                    <img src={i.image_Url} alt={i.title} 
-                    style={{
-                        width: "25px",
-                        height: "25px",
-                        objectFit:"contain",
-                        marginLeft:"none"
-                    }}
-                    
+                    <img
+                        src={i.images}
+                        alt={i.title}
+                        className='w-[28px] h-[28px] object-cover rounded-sm flex-shrink-0'
                     />
-                   <h3 className='m-3 cursor-pointer select-none'>{i.title}</h3>
+                    <h3 className='text-sm font-medium text-gray-700 cursor-pointer select-none line-clamp-1'>
+                        {i.title}
+                    </h3>
                 </div>
-            ))
-        }
-      
-    </div>
-  )
+            ))}
+        </div>
+    )
 }
 
 export default DropDown
