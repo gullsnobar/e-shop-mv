@@ -3,41 +3,46 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
 import { server } from "../../server";
 import { toast } from "react-toastify";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { loadUser } from "../../redux/actions/user";
 
 const Login = () => {
-
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const [email,setEmail] = useState("");
-  const [password,setPassword] = useState("");
-  const [visible,setVisible] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [visible, setVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
+    setLoading(true);
 
-    await fetch(`${server}/user/login-user`,{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body: JSON.stringify({email,password})
-    })
-    .then(res => res.json())
-    .then(data => {
+    try {
+      const { data } = await axios.post(
+        `${server}/user/login-user`,
+        { email, password },
+        { withCredentials: true }
+      );
 
-      if(data.success){
-        toast.success("Login Success!");
+      if (data.success) {
+        if (data.token) {
+          localStorage.setItem("token", data.token);
+          axios.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
+        }
+        toast.success(data.message || "Login Success!");
+        dispatch(loadUser());
         navigate("/");
-      }else{
-        toast.error(data.message);
+      } else {
+        toast.error(data.message || "Login failed");
       }
-
-    })
-    .catch(err=>{
-      toast.error(err.message);
-    });
-
+    } catch (err) {
+      toast.error(err?.response?.data?.message || err.message || "Login failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -120,10 +125,10 @@ const Login = () => {
 
           <button
             type="submit"
-            className="w-full py-2.5 bg-blue-600 text-white font-semibold
-            rounded-lg hover:bg-blue-700 transition"
+            disabled={loading}
+            className={`w-full py-2.5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
 
           <p className="text-center text-sm text-gray-600">

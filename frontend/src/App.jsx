@@ -3,13 +3,13 @@ import LoginPage from "./pages/Login.jsx";
 import SignupPage from "./pages/Signup.jsx";
 import { ActivationPage, HomePage, ProductsPage, EventsPage, BestSellingPage, FAQPage } from "./Routes.js";
 import "./App.css";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
-import { server } from "./server.js";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { getAllProducts } from "./redux/actions/products";
+import { loadUser } from "./redux/actions/user";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -19,16 +19,12 @@ const App = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    axios.get(`${server}/user/me`, { withCredentials: true })
-      .then((res) => {
-        // optional success (can remove if not needed)
-        // toast.success("User fetched successfully");
-      })
-      .catch((err) => {
-        // fixed error handling (avoid crash if undefined)
-        toast.error(err?.response?.data?.message || "Something went wrong");
-      });
-  }, []);
+    const token = localStorage.getItem("token");
+    if (token) {
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      dispatch(loadUser());
+    }
+  }, [dispatch]);
 
   return (
     <div className="overflow-x-hidden">

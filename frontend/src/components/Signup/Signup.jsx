@@ -20,42 +20,52 @@ const SignUp = () => {
     setAvatar(e.target.files[0]);
   };
 
-  const handleSubmit = (e)=>{
-    e.preventDefault(); // moved to top
+  const [loading, setLoading] = useState(false);
 
-    if(!avatar){
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!avatar) {
       toast.error("Please select profile image");
       return;
     }
 
-    const config={
-      headers:{"Content-Type":"multipart/form-data"}
-    };
+    setLoading(true);
 
-    const newForm = new FormData(); // only one instance
+    try {
+      const config = {
+        headers: { "Content-Type": "multipart/form-data" },
+      };
 
-    newForm.append("name",name);
-    newForm.append("file",avatar);
-    newForm.append("email",email);
-    newForm.append("password",password);
+      const newForm = new FormData();
+      newForm.append("name", name);
+      newForm.append("file", avatar);
+      newForm.append("email", email);
+      newForm.append("password", password);
 
-    axios.post(`${server}/user/create-user`,newForm,config)
+      const res = await axios.post(`${server}/user/create-user`, newForm, config);
 
-    .then((res)=>{
-      toast.success(res.data.message);
+      if (res.data.success) {
+        if (res.data.token) {
+          localStorage.setItem("token", res.data.token);
+          axios.defaults.headers.common["Authorization"] = `Bearer ${res.data.token}`;
+        }
+        toast.success(res.data.message || "Account created successfully!");
 
-      setName("");
-      setEmail("");
-      setPassword("");
-      setAvatar(null);
+        setName("");
+        setEmail("");
+        setPassword("");
+        setAvatar(null);
 
-      navigate("/login");
-    })
-
-    .catch((err)=>{
-      toast.error(err.response?.data?.message || "Error");
-    });
-
+        navigate("/login");
+      } else {
+        toast.error(res.data.message || "Signup failed");
+      }
+    } catch (err) {
+      toast.error(err?.response?.data?.message || err.message || "Signup failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -163,10 +173,10 @@ const SignUp = () => {
 
             <button
               type="submit"
-              className="w-full py-2.5 bg-blue-600 text-white font-semibold
-              rounded-lg hover:bg-blue-700 transition"
+              disabled={loading}
+              className={`w-full py-2.5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
             >
-              Sign Up
+              {loading ? "Creating account..." : "Sign Up"}
             </button>
 
             <p className="text-center text-sm text-gray-600">

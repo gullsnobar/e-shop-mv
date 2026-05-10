@@ -12,7 +12,6 @@ const BestDeals = () => {
     const firstFive = sortedData && sortedData.slice(0, 5);
     setData(firstFive);
   }, [allProducts]);
-  
 
   return (
     <div>

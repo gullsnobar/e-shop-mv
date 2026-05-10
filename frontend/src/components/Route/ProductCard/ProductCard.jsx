@@ -40,7 +40,7 @@ const ProductCard = ({ data, isEvent }) => {
   const productId = product._id || product.id || "";
 
   useEffect(() => {
-    if (wishlist && wishlist.find((i) => i._id === productId)) {
+    if (wishlist && wishlist.find((i) => (i._id || i.id) === productId)) {
       setClick(true);
     } else {
       setClick(false);
@@ -58,7 +58,7 @@ const ProductCard = ({ data, isEvent }) => {
   };
 
   const addToCartHandler = (id) => {
-    const isItemExists = cart && cart.find((i) => i._id === id);
+    const isItemExists = cart && cart.find((i) => (i._id || i.id) === id);
     if (isItemExists) {
       toast.error("Item already in cart!");
     } else {
@@ -74,25 +74,68 @@ const ProductCard = ({ data, isEvent }) => {
 
   return (
     <>
-      <div className="w-full h-[370px] bg-white rounded-lg shadow-sm p-3 relative cursor-pointer">
-        <div className="flex justify-end"></div>
-        <Link to={`${isEvent === true ? `/product/${productId}?isEvent=true` : `/product/${productId}`}`}>
-          {imageUrl ? (
-            <img
-              src={imageUrl}
-              alt={productName}
-              className="w-full h-[170px] object-contain"
-              onError={(e) => {
-                e.target.style.display = "none";
-                e.target.parentElement.innerHTML = `<div class="w-full h-[170px] flex items-center justify-center bg-gray-50 text-gray-400 text-sm rounded-md">No Image</div>`;
-              }}
+      <div className="w-full h-[370px] bg-white rounded-lg shadow-sm p-3 cursor-pointer">
+        {/* Image + Side Icons Row */}
+        <div className="flex gap-2">
+          <Link
+            to={`${isEvent === true ? `/product/${productId}?isEvent=true` : `/product/${productId}`}`}
+            className="flex-1"
+          >
+            {imageUrl ? (
+              <img
+                src={imageUrl}
+                alt={productName}
+                className="w-full h-[170px] object-contain"
+                onError={(e) => {
+                  e.target.style.display = "none";
+                  e.target.parentElement.innerHTML = `<div class="w-full h-[170px] flex items-center justify-center bg-gray-50 text-gray-400 text-sm rounded-md">No Image</div>`;
+                }}
+              />
+            ) : (
+              <div className="w-full h-[170px] flex items-center justify-center bg-gray-50 text-gray-400 text-sm rounded-md">
+                No Image
+              </div>
+            )}
+          </Link>
+
+          {/* Side Icons */}
+          <div className="flex flex-col items-center gap-3 pt-1">
+            {click ? (
+              <AiFillHeart
+                size={20}
+                className="cursor-pointer"
+                onClick={() => removeFromWishlistHandler(data)}
+                color="red"
+                title="Remove from wishlist"
+              />
+            ) : (
+              <AiOutlineHeart
+                size={20}
+                className="cursor-pointer"
+                onClick={() => addToWishlistHandler(data)}
+                color="#333"
+                title="Add to wishlist"
+              />
+            )}
+            <AiOutlineEye
+              size={20}
+              className="cursor-pointer"
+              onClick={() => setOpen(!open)}
+              color="#333"
+              title="Quick view"
             />
-          ) : (
-            <div className="w-full h-[170px] flex items-center justify-center bg-gray-50 text-gray-400 text-sm rounded-md">
-              No Image
-            </div>
-          )}
-        </Link>
+            <AiOutlineShoppingCart
+              size={22}
+              className="cursor-pointer"
+              onClick={() => addToCartHandler(productId)}
+              color="#444"
+              title="Add to cart"
+            />
+          </div>
+        </div>
+
+        {open ? <ProductDetailsCard setOpen={setOpen} data={data} /> : null}
+
         <Link to={`/shop/preview/${shopId}`}>
           <h5 className={`${styles.shop_name}`}>{shopName}</h5>
         </Link>
@@ -119,42 +162,6 @@ const ProductCard = ({ data, isEvent }) => {
             </span>
           </div>
         </Link>
-
-        {/* side options */}
-        <div>
-          {click ? (
-            <AiFillHeart
-              size={22}
-              className="cursor-pointer absolute right-2 top-5"
-              onClick={() => removeFromWishlistHandler(data)}
-              color={click ? "red" : "#333"}
-              title="Remove from wishlist"
-            />
-          ) : (
-            <AiOutlineHeart
-              size={22}
-              className="cursor-pointer absolute right-2 top-5"
-              onClick={() => addToWishlistHandler(data)}
-              color={click ? "red" : "#333"}
-              title="Add to wishlist"
-            />
-          )}
-          <AiOutlineEye
-            size={22}
-            className="cursor-pointer absolute right-2 top-14"
-            onClick={() => setOpen(!open)}
-            color="#333"
-            title="Quick view"
-          />
-          <AiOutlineShoppingCart
-            size={25}
-            className="cursor-pointer absolute right-2 top-24"
-            onClick={() => addToCartHandler(productId)}
-            color="#444"
-            title="Add to cart"
-          />
-          {open ? <ProductDetailsCard setOpen={setOpen} data={data} /> : null}
-        </div>
       </div>
     </>
   );
