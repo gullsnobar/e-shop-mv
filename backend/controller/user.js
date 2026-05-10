@@ -24,54 +24,56 @@ const createActivationToken = (user) => {
 // -------------------------------------------------------
 // Create User
 // -------------------------------------------------------
-router.post("/create-user", upload.single("file"), async (req, res, next) => {
-  try {
-    const { name, email, password } = req.body;
+router.post("/create-user", upload.single("file"), catchAsyncError(async (req, res, next) => {
+  const { name, email, password } = req.body;
 
-    const userEmail = await User.findOne({ email });
-    if (userEmail) {
-      return next(new ErrorHandler("User already exists", 400));
-    }
-
-    const uploadStream = cloudinary.uploader.upload_stream(
-      { folder: "avatars" },
-      async (error, result) => {
-        if (error) return next(new ErrorHandler(error.message, 500));
-
-        const user = {
-          name,
-          email,
-          password,
-          avatar: {
-            public_id: result.public_id,
-            url: result.secure_url,
-          },
-        };
-
-        const activationToken = createActivationToken(user);
-        const activationUrl = `https://frontend-multivendor.netlify.app/activation/${activationToken}`;
-
-        try {
-          await sendMail({
-            mail: user.email,
-            subject: "Activate your account",
-            message: `Hello ${user.name}, please click on the link to activate your account: ${activationUrl}`,
-          });
-
-          res.status(201).json({
-            message: `Please check your email:- ${user.email} to confirm your account`,
-          });
-        } catch (e) {
-          return next(new ErrorHandler(e.message, 500));
-        }
-      }
-    );
-
-    uploadStream.end(req.file.buffer);
-  } catch (e) {
-    return next(new ErrorHandler(e.message, 500));
+  if (!name || !email || !password) {
+    return next(new ErrorHandler("Please provide all required fields", 400));
   }
-});
+
+  const userEmail = await User.findOne({ email });
+  if (userEmail) {
+    if (req.file && req.file.path && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+    return next(new ErrorHandler("User already exists with this email", 400));
+  }
+
+  let avatar = {
+    public_id: "default",
+    url: "https://via.placeholder.com/150",
+  };
+
+  if (req.file && req.file.path) {
+    const hasCloudinaryCreds = process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET;
+    if (hasCloudinaryCreds) {
+      try {
+        const result = await cloudinary.uploader.upload(req.file.path, { folder: "avatars" });
+        avatar = { public_id: result.public_id, url: result.secure_url };
+        if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+      } catch (cloudErr) {
+        console.error("[createUser] Cloudinary upload failed:", cloudErr.message);
+        avatar = { public_id: req.file.filename, url: `${req.protocol}://${req.get("host")}/${req.file.filename}` };
+      }
+    } else {
+      avatar = { public_id: req.file.filename, url: `${req.protocol}://${req.get("host")}/${req.file.filename}` };
+    }
+  }
+
+  const newUser = await User.create({ name, email, password, avatar });
+  const token = newUser.getJwtToken();
+  newUser.password = undefined;
+
+  try {
+    const activationToken = jwt.sign({ id: newUser._id }, process.env.ACTIVATION_SECRET, { expiresIn: "5m" });
+    const activationUrl = `http://localhost:5173/activation/${activationToken}`;
+    await sendMail({ email: newUser.email, subject: "Activate your account", message: `Hello ${newUser.name}, please click on the link to activate your account: ${activationUrl}` });
+  } catch (emailErr) {
+    console.error("[createUser] Activation email failed:", emailErr.message || emailErr);
+  }
+
+  res.status(201).json({ success: true, message: "Account created successfully!", user: newUser, token });
+}));
 
 // -------------------------------------------------------
 // Activate User
@@ -82,30 +84,21 @@ router.post(
     try {
       const { activation_token } = req.body;
 
-      const newUser = jwt.verify(
+      const decoded = jwt.verify(
         activation_token,
         process.env.ACTIVATION_SECRET
       );
 
-      if (!newUser) {
-        return next(new ErrorHandler("Invalid Token", 400));
+      if (!decoded || !decoded.id) {
+        return next(new ErrorHandler("Invalid activation token", 400));
       }
 
-      const { name, email, password, avatar } = newUser;
-
-      const userEmail = await User.findOne({ email });
-      if (userEmail) {
-        return next(new ErrorHandler("User Already Exists", 400));
+      const user = await User.findById(decoded.id);
+      if (!user) {
+        return next(new ErrorHandler("User not found", 400));
       }
 
-      const createdUser = await User.create({
-        name,
-        email,
-        password,
-        avatar,
-      });
-
-      sendToken(createdUser, 201, res);
+      sendToken(user, 200, res);
     } catch (e) {
       return next(new ErrorHandler(e.message, 500));
     }

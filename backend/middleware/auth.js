@@ -5,15 +5,26 @@ const User = require("../model/user");
 
 
 exports.isAuthenticated = catchAsyncError(async(req, res, next) => {
-  const { token } = req.cookies;
+  // Try cookie first, then Authorization header
+  let token = req.cookies?.token;
+
+  if (!token && req.headers.authorization) {
+    const authHeader = req.headers.authorization;
+    if (authHeader.startsWith("Bearer ")) {
+      token = authHeader.substring(7);
+    }
+  }
 
   if (!token) {
     return next(new ErrorHandler("Please login to access this resource", 401));
   }
 
-  const decodedData = jwt.verify(token, process.env.JWT_SECRET);
+  const decodedData = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
   req.user = await User.findById(decodedData.id);
+  if (!req.user) {
+    return next(new ErrorHandler("User not found", 404));
+  }
   next();
 });
 
