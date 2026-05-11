@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { RxCross1 } from "react-icons/rx";
 import { IoBagHandleOutline } from "react-icons/io5";
 import { HiOutlineMinus, HiPlus } from "react-icons/hi";
-import styles from "../../styles/styles";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addTocart, removeFromCart } from "../../redux/actions/cart";
@@ -27,17 +26,24 @@ const Cart = ({ setOpenCart }) => {
   };
 
   return (
-    <div className="fixed top-0 left-0 w-full bg-[#0000004b] h-screen z-10">
-      <div className="fixed top-0 right-0 h-full w-[85%] max-w-[380px] bg-white flex flex-col overflow-y-scroll justify-between shadow-sm">
+    <div
+      className="fixed top-0 left-0 w-full bg-[#0000004b] h-screen z-10"
+      onClick={() => setOpenCart(false)}
+    >
+      <div
+        className="fixed top-0 right-0 h-full w-[85%] max-w-[380px] bg-white flex flex-col overflow-y-scroll justify-between shadow-sm"
+        onClick={(e) => e.stopPropagation()}
+      >
         {cart && cart.length === 0 ? (
-          <div className="w-full h-screen flex items-center justify-center">
-            <div className="flex w-full justify-end pt-5 pr-5 fixed top-3 right-3">
+          <div className="w-full h-full flex flex-col items-center justify-center px-4 relative">
+            <div className="flex w-full justify-end pt-5 pr-5 absolute top-0 right-0">
               <RxCross1
                 size={25}
                 className="cursor-pointer"
                 onClick={() => setOpenCart(false)}
               />
             </div>
+            <IoBagHandleOutline size={40} className="text-gray-300 mb-3" />
             <h5 className="text-lg font-medium text-gray-500">Your cart is empty</h5>
           </div>
         ) : (
@@ -50,16 +56,12 @@ const Cart = ({ setOpenCart }) => {
                   onClick={() => setOpenCart(false)}
                 />
               </div>
-              {/* Item length */}
-              <div className={`${styles.noramlFlex} p-4`}>
+              <div className="flex items-center p-4">
                 <IoBagHandleOutline size={25} />
                 <h5 className="pl-2 text-[20px] font-[500]">
                   {cart && cart.length} items
                 </h5>
               </div>
-
-              {/* cart Single Items */}
-              <br />
               <div className="w-full border-t">
                 {cart &&
                   cart.map((i, index) => (
