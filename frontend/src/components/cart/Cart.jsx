@@ -27,7 +27,7 @@ const Cart = ({ setOpenCart }) => {
 
   return (
     <div
-      className="fixed top-0 left-0 w-full bg-[#0000004b] h-screen z-10"
+      className="fixed top-0 left-0 w-full bg-[#0000004b] h-screen z-[60]"
       onClick={() => setOpenCart(false)}
     >
       <div
