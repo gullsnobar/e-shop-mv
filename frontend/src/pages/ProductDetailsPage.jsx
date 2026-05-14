@@ -6,6 +6,7 @@ const ProductDetailsPage = () => {
   return (
     <div>
       <Header />
+      
       <Footer />
     </div>
   )
