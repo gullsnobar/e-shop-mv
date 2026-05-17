@@ -74,7 +74,7 @@ const ProductCard = ({ data, isEvent }) => {
 
   return (
     <>
-      <div className="w-full h-[370px] bg-white rounded-lg shadow-sm p-3 cursor-pointer">
+      <div className="w-full bg-white rounded-lg shadow-sm p-3 cursor-pointer">
         {/* Image + Side Icons Row */}
         <div className="flex gap-2">
           <Link

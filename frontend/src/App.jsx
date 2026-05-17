@@ -10,9 +10,12 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { getAllProducts } from "./redux/actions/products";
 import { loadUser } from "./redux/actions/user";
+import ProtectedRoute from "./ProtectedRoute"
+import { useSelector } from "react-redux";
 
 const App = () => {
   const dispatch = useDispatch();
+  const { isAuthenticated } = useSelector((state) => state.user);
 
   useEffect(() => {
     dispatch(getAllProducts());
@@ -39,7 +42,11 @@ const App = () => {
           <Route path="/best-selling" element={<BestSellingPage />} />
           <Route path="/events" element={<EventsPage />} />
           <Route path="/faq" element={<FAQPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/profile" element={
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <ProfilePage />
+              </ProtectedRoute>
+            } />
 
         </Routes>
       </BrowserRouter>

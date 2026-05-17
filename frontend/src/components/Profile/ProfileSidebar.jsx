@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { HiOutlineReceiptRefund, HiOutlineShoppingBag } from 'react-icons/hi';
 import { RxPerson } from "react-icons/rx"
 import { MdOutlineTrackChanges } from "react-icons/md"
