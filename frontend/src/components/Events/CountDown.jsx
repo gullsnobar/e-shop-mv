@@ -36,15 +36,15 @@ const CountDown = () => {
   const intervals = ["Days", "Hours", "Minutes", "Seconds"];
 
   return (
-    <div className="flex items-center gap-2 mt-3">
+    <div className="flex items-center gap-2">
       {intervals.map((interval) => {
         const value = timeLeft[interval] ?? 0;
         return (
           <div
             key={interval}
-            className="flex flex-col items-center justify-center min-w-[60px] px-2 py-1.5 bg-[#3321c8] rounded-md text-white"
+            className="flex flex-col items-center justify-center min-w-[56px] px-2 py-2 bg-[#3321c8] rounded-lg text-white"
           >
-            <span className="text-[18px] font-bold leading-tight">
+            <span className="text-[20px] font-bold leading-tight">
               {String(value).padStart(2, "0")}
             </span>
             <span className="text-[10px] font-medium uppercase tracking-wide opacity-90">

@@ -5,7 +5,7 @@ import ProfileSidebar from "../components/Profile/ProfileSidebar"
 import ProfileContent from '../components/Profile/ProfileContent'
 
 const ProfilePage = () => {
-    const [active, setActive] = useState(0);
+    const [active, setActive] = useState(1);
   return (
     <div>
         <Header />
@@ -13,7 +13,7 @@ const ProfilePage = () => {
             <div className='w-[335px]'>
             <ProfileSidebar active={active} setActive={setActive} />
             </div>
-            <ProfileContent />
+            <ProfileContent active={active} />
 
         </div>
       

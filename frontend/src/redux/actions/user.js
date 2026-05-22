@@ -17,6 +17,8 @@ import {
   getAllUsersSuccess,
   getAllUsersFailed,
   clearErrors,
+  clearMessages,
+  logoutUser,
 } from "../reducers/user";
 import {
   loadSellerRequest,
@@ -141,6 +143,21 @@ export const deleteUserAddress = (id) => async (dispatch) => {
     dispatch(deleteUserAddressFailed(error?.response?.data?.message || "Delete failed"));
   }
 };
+
+// logout user
+export const logoutUserAction = () => async (dispatch) => {
+  try {
+    await axios.get(`${server}/user/logout`, { withCredentials: true });
+  } catch (_) {
+    // ignore logout API errors
+  } finally {
+    localStorage.removeItem("token");
+    delete axios.defaults.headers.common["Authorization"];
+    dispatch(logoutUser());
+  }
+};
+
+export { clearMessages };
 
 // get all users --- admin
 export const getAllUsers = () => async (dispatch) => {

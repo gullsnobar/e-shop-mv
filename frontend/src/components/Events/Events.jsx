@@ -13,18 +13,16 @@ const Events = () => {
   }, [dispatch]);
 
   return (
-    <div>
-      <div className={`${styles.section}`}>
-        <div className={`${styles.heading}`}>
-          <h1>Popular Events</h1>
-        </div>
+    <div className={`${styles.section} py-10`}>
+      <div className={`${styles.heading} mb-8`}>
+        <h1>Popular Events</h1>
+      </div>
 
-        <div className="w-full grid gap-5">
-          {events &&
-            events.map((event, index) => (
-              <EventCard key={event._id || index} data={event} active={index === 0} />
-            ))}
-        </div>
+      <div className="space-y-8">
+        {events &&
+          events.map((event, index) => (
+            <EventCard key={event._id || index} data={event} />
+          ))}
       </div>
     </div>
   );

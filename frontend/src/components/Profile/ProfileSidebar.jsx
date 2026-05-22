@@ -4,9 +4,12 @@ import { RxPerson } from "react-icons/rx"
 import { MdOutlineTrackChanges } from "react-icons/md"
 import { AiOutlineMessage, AiOutlineLogout } from "react-icons/ai"
 import { useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { logoutUserAction } from '../../redux/actions/user'
 
 const ProfileSidebar = ({ active, setActive }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   return (
     <div className='w-full bg-white shadow-sm rounded-[10px] p-4 pt-8'>
@@ -95,8 +98,8 @@ const ProfileSidebar = ({ active, setActive }) => {
       <div
         className='flex items-center cursor-pointer w-full mb-8'
         onClick={() => {
-          setActive(8)
-          navigate("/login")
+          dispatch(logoutUserAction());
+          navigate("/login");
         }}
       >
         <AiOutlineLogout size={20} color={active === 8 ? 'red' : '#ccc'} />

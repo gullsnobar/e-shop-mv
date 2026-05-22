@@ -5,6 +5,7 @@ const initialState = {
   loading: false,
   user: null,
   error: null,
+  successMessage: null,
 };
 
 const userSlice = createSlice({
@@ -31,6 +32,7 @@ const userSlice = createSlice({
     updateUserInfoSuccess: (state, action) => {
       state.loading = false;
       state.user = action.payload;
+      state.successMessage = "Profile updated successfully!";
       state.error = null;
     },
     updateUserInfoFailed: (state, action) => {
@@ -43,6 +45,7 @@ const userSlice = createSlice({
     updateUserAddressSuccess: (state, action) => {
       state.loading = false;
       state.user = action.payload.user;
+      state.successMessage = action.payload.successMessage;
       state.error = null;
     },
     updateUserAddressFailed: (state, action) => {
@@ -55,6 +58,7 @@ const userSlice = createSlice({
     deleteUserAddressSuccess: (state, action) => {
       state.loading = false;
       state.user = action.payload.user;
+      state.successMessage = action.payload.successMessage;
       state.error = null;
     },
     deleteUserAddressFailed: (state, action) => {
@@ -76,6 +80,15 @@ const userSlice = createSlice({
     clearErrors: (state) => {
       state.error = null;
     },
+    clearMessages: (state) => {
+      state.successMessage = null;
+    },
+    logoutUser: (state) => {
+      state.isAuthenticated = false;
+      state.user = null;
+      state.error = null;
+      state.successMessage = null;
+    },
   },
 });
 
@@ -96,5 +109,7 @@ export const {
   getAllUsersSuccess,
   getAllUsersFailed,
   clearErrors,
+  clearMessages,
+  logoutUser,
 } = userSlice.actions;
 export const userReducer = userSlice.reducer;
