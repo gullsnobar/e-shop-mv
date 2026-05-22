@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   allProducts: [],
+  shopProducts: [],
   isLoading: false,
   error: null,
 };
@@ -22,9 +23,21 @@ const productsSlice = createSlice({
       state.isLoading = false;
       state.error = action.payload;
     },
+    getAllProductsShopRequest: (state) => {
+      state.isLoading = true;
+    },
+    getAllProductsShopSuccess: (state, action) => {
+      state.isLoading = false;
+      state.shopProducts = action.payload;
+      state.error = null;
+    },
+    getAllProductsShopFailed: (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
   },
 });
 
-export const { productsLoading, productsSuccess, productsError } =
+export const { productsLoading, productsSuccess, productsError, getAllProductsShopRequest, getAllProductsShopSuccess, getAllProductsShopFailed } =
   productsSlice.actions;
 export const productsReducer = productsSlice.reducer;
