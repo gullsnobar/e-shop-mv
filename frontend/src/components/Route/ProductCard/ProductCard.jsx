@@ -75,7 +75,6 @@ const ProductCard = ({ data, isEvent }) => {
   return (
     <>
       <div className="w-full bg-white rounded-lg shadow-sm p-3 cursor-pointer">
-        {/* Image + Side Icons Row */}
         <div className="flex gap-2">
           <Link
             to={`${isEvent === true ? `/products/${productName.replace(/\s+/g, '-')}?isEvent=true` : `/products/${productName.replace(/\s+/g, '-')}`}`}
@@ -98,7 +97,6 @@ const ProductCard = ({ data, isEvent }) => {
             )}
           </Link>
 
-          {/* Side Icons */}
           <div className="flex flex-col items-center gap-3 pt-1">
             {click ? (
               <AiFillHeart

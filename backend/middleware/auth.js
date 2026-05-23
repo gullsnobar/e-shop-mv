@@ -2,6 +2,7 @@ const ErrorHandler = require("../utils/ErrorHandler");
 const catchAsyncError = require("../utils/catchAsyncErrors");
 const jwt = require("jsonwebtoken");
 const User = require("../model/user");
+const Shop = require("../model/shop");
 
 
 exports.isAuthenticated = catchAsyncError(async(req, res, next) => {
@@ -38,3 +39,26 @@ exports.isAdmin = (...roles) => {
     next();
   };
 };
+
+exports.isSeller = catchAsyncError(async (req, res, next) => {
+  let token = req.cookies?.seller_token;
+
+  if (!token && req.headers.authorization) {
+    const authHeader = req.headers.authorization;
+    if (authHeader.startsWith("Bearer ")) {
+      token = authHeader.substring(7);
+    }
+  }
+
+  if (!token) {
+    return next(new ErrorHandler("Please login to access this resource", 401));
+  }
+
+  const decodedData = jwt.verify(token, process.env.JWT_SECRET_KEY);
+
+  req.seller = await Shop.findById(decodedData.id);
+  if (!req.seller) {
+    return next(new ErrorHandler("Seller not found", 404));
+  }
+  next();
+});

@@ -235,6 +235,7 @@ const ShopCreate = () => {
                     name="avatar"
                     id="file-input"
                     accept="image/*"
+                    required
                     onChange={handleFileInputChange}
                     className="sr-only"
                   />

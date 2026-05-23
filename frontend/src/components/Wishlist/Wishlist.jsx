@@ -63,38 +63,51 @@ const Wishlist = ({ setOpenWishlist }) => {
                   wishlist.map((item, index) => {
                     const imageUrl = item?.images?.[0]?.url ?? "";
                     const price = item.discountPrice ?? item.discount_price ?? item.price ?? 0;
+                    const originalPrice = item.originalPrice ?? item.original_price ?? 0;
                     return (
-                      <div key={item._id || item.id || index} className="border-b px-4 py-3">
-                        <div className="flex items-start gap-3">
+                      <div key={item._id || item.id || index} className="border-b px-4 py-4">
+                        <div className="flex items-center gap-4 bg-gray-50 rounded-xl p-3">
+                          {/* Image */}
                           {imageUrl ? (
-                            <Link to={`/products/${item.name?.replace(/\s+/g, '-')}`} onClick={() => setOpenWishlist(false)}>
+                            <Link to={`/products/${item.name?.replace(/\s+/g, '-')}`} onClick={() => setOpenWishlist(false)} className="flex-shrink-0">
                               <img
                                 src={imageUrl}
                                 alt={item.name || ""}
-                                className="w-[60px] h-[60px] rounded-md object-cover flex-shrink-0"
+                                className="w-[80px] h-[80px] rounded-lg object-cover bg-white shadow-sm"
                                 onError={(e) => { e.target.style.display = "none"; }}
                               />
                             </Link>
                           ) : (
-                            <div className="w-[60px] h-[60px] rounded-md bg-gray-100 flex items-center justify-center text-gray-400 text-[10px] flex-shrink-0">
+                            <div className="w-[80px] h-[80px] rounded-lg bg-white flex items-center justify-center text-gray-400 text-[10px] flex-shrink-0 shadow-sm">
                               No Image
                             </div>
                           )}
+
+                          {/* Details */}
                           <div className="flex-1 min-w-0">
                             <Link
                               to={`/products/${item.name?.replace(/\s+/g, '-')}`}
                               onClick={() => setOpenWishlist(false)}
-                              className="text-[13px] font-medium hover:text-[#3321c8] transition block truncate leading-tight"
+                              className="text-[14px] font-semibold text-gray-800 hover:text-[#3321c8] transition block leading-snug line-clamp-2"
                             >
                               {item.name || "Product"}
                             </Link>
-                            <p className="text-[#d02222] font-semibold text-sm mt-0.5">US${price}</p>
+                            <div className="flex items-center gap-2 mt-1">
+                              <p className="text-[#3321c8] font-bold text-[15px]">${price}</p>
+                              {originalPrice > 0 && (
+                                <p className="text-gray-400 text-[13px] line-through">${originalPrice}</p>
+                              )}
+                            </div>
                           </div>
-                          <RxCross1
-                            size={16}
-                            className="cursor-pointer text-gray-300 hover:text-red-500 flex-shrink-0 mt-0.5"
+
+                          {/* Remove */}
+                          <button
+                            className="w-[32px] h-[32px] rounded-full bg-white shadow-sm flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition flex-shrink-0"
                             onClick={() => removeHandler(item)}
-                          />
+                            title="Remove from wishlist"
+                          >
+                            <RxCross1 size={15} />
+                          </button>
                         </div>
                       </div>
                     );

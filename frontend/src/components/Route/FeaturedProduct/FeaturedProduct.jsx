@@ -11,7 +11,11 @@ const FeaturedProduct = () => {
   useEffect(() => {
     dispatch(getAllProducts());
   }, [dispatch]);
-   
+
+  const uniqueProducts = allProducts && allProducts.length > 0
+    ? [...new Map(allProducts.map(p => [p._id || p.id, p])).values()]
+    : [];
+
   return (
     <div className="w-full">
       <div className={`${styles.section}`}>
@@ -19,8 +23,8 @@ const FeaturedProduct = () => {
           <h1>Featured Products</h1>
         </div>
         <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-4 lg:gap-[25px] xl:grid-cols-5 xl:gap-[30px] mb-12">
-          {allProducts && allProducts.length > 0 ? (
-            allProducts.map((i, index) => <ProductCard data={i} key={i._id || i.id || index} />)
+          {uniqueProducts && uniqueProducts.length > 0 ? (
+            uniqueProducts.map((i, index) => <ProductCard data={i} key={i._id || i.id || index} />)
           ) : (
             <div className="col-span-full text-center py-12">
               <p className="text-gray-500">No products available at the moment.</p>
