@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { categoriesData } from "../../static/data";
 import {
@@ -30,6 +30,7 @@ const Header = ({ activeHeading }) => {
   const [openCart, setOpenCart] = useState(false);
   const [openWishlist, setOpenWishlist] = useState(false);
   const [open, setOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   const handleSearchChange = (e) => {
     const term = e.target.value;
@@ -67,6 +68,21 @@ const Header = ({ activeHeading }) => {
     };
   }, [open]);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropDown(false);
+      }
+    };
+    if (dropDown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropDown]);
+
   return (
     <>
       {/* ================= DESKTOP HEADER ================= */}
@@ -100,7 +116,7 @@ const Header = ({ activeHeading }) => {
                 <div className="absolute top-full left-0 w-full min-h-[30vh] bg-white shadow-lg z-[60] p-4 rounded-b-md border border-gray-100">
                   {searchData.map((i) => (
                     <Link
-                      to={`/product/${i._id}`}
+                      to={`/products/${i.name?.replace(/\s+/g, '-')}`}
                       key={i._id}
                       onClick={() => {
                         setSearchTerm("");
@@ -144,9 +160,9 @@ const Header = ({ activeHeading }) => {
         >
           <div className="max-w-[1400px] mx-auto px-4 xl:px-6 h-full flex items-center justify-between">
             {/* Categories Dropdown */}
-            <div className="relative hidden lg:block">
+            <div ref={dropdownRef} className="relative hidden lg:block overflow-visible">
               <div
-                className="relative h-[45px] w-[230px] cursor-pointer"
+                className="relative h-[45px] w-[230px] cursor-pointer overflow-visible"
                 onClick={() => setDropDown(!dropDown)}
               >
                 <BiMenuAltLeft
@@ -158,15 +174,17 @@ const Header = ({ activeHeading }) => {
                 </button>
                 <IoIosArrowDown
                   size={16}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 pointer-events-none"
+                  className={`absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 pointer-events-none transition-transform duration-200 ${
+                    dropDown ? "rotate-180" : ""
+                  }`}
                 />
-                {dropDown && (
-                  <DropDown
-                    categoriesData={categoriesData}
-                    setDropDown={setDropDown}
-                  />
-                )}
               </div>
+              {dropDown && (
+                <DropDown
+                  categoriesData={categoriesData}
+                  setDropDown={setDropDown}
+                />
+              )}
             </div>
 
             {/* Navigation Links */}
@@ -321,7 +339,7 @@ const Header = ({ activeHeading }) => {
                 <div className="absolute top-full left-0 w-full bg-white shadow-lg z-10 p-3 rounded-b-md border border-gray-100 mt-1 max-h-[40vh] overflow-y-auto">
                   {searchData.map((i) => (
                     <Link
-                      to={`/product/${i._id}`}
+                      to={`/products/${i.name?.replace(/\s+/g, '-')}`}
                       key={i._id}
                       onClick={() => {
                         setSearchTerm("");

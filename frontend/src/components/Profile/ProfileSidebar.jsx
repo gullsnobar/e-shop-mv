@@ -1,4 +1,3 @@
-
 import { HiOutlineReceiptRefund, HiOutlineShoppingBag } from 'react-icons/hi';
 import { RxPerson } from "react-icons/rx"
 import { MdOutlineTrackChanges } from "react-icons/md"
@@ -11,103 +10,93 @@ const ProfileSidebar = ({ active, setActive }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const menuItems = [
+    { id: 1, label: "Profile", icon: RxPerson },
+    { id: 2, label: "Orders", icon: HiOutlineShoppingBag },
+    { id: 3, label: "Refunds", icon: HiOutlineReceiptRefund },
+    { id: 4, label: "Inbox", icon: AiOutlineMessage, action: () => navigate("/inbox") },
+    { id: 5, label: "Track Order", icon: MdOutlineTrackChanges },
+    { id: 6, label: "Payment Methods", icon: HiOutlineShoppingBag },
+    { id: 7, label: "Address", icon: HiOutlineShoppingBag },
+  ];
+
+  const handleClick = (item) => {
+    if (item.action) {
+      setActive(item.id);
+      item.action();
+    } else {
+      setActive(item.id);
+    }
+  };
+
   return (
-    <div className='w-full bg-white shadow-sm rounded-[10px] p-4 pt-8'>
-
-      {/* Profile */}
-      <div
-        className='flex items-center cursor-pointer w-full mb-8'
-        onClick={() => setActive(1)}
-      >
-        <RxPerson size={20} color={active === 1 ? 'red' : '#ccc'} />
-        <span className={`pl-3 ${active === 1 ? 'text-red-500' : 'text-gray-500'}`}>
-          Profile
-        </span>
+    <div className="w-full">
+      {/* Mobile: horizontal scrollable tabs */}
+      <div className="lg:hidden bg-white rounded-xl shadow-sm p-2 overflow-x-auto">
+        <div className="flex gap-1 min-w-max">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = active === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleClick(item)}
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm whitespace-nowrap transition-all ${
+                  isActive
+                    ? "bg-blue-50 text-blue-600 font-medium"
+                    : "text-gray-500 hover:bg-gray-50"
+                }`}
+              >
+                <Icon size={16} />
+                <span>{item.label}</span>
+              </button>
+            );
+          })}
+          <button
+            onClick={() => {
+              dispatch(logoutUserAction());
+              navigate("/login");
+            }}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm whitespace-nowrap text-gray-500 hover:bg-red-50 hover:text-red-500 transition-all"
+          >
+            <AiOutlineLogout size={16} />
+            <span>Logout</span>
+          </button>
+        </div>
       </div>
 
-      {/* Orders */}
-      <div
-        className='flex items-center cursor-pointer w-full mb-8'
-        onClick={() => setActive(2)}
-      >
-        <HiOutlineShoppingBag size={20} color={active === 2 ? 'red' : '#ccc'} />
-        <span className={`pl-3 ${active === 2 ? 'text-red-500' : 'text-gray-500'}`}>
-          Orders
-        </span>
-      </div>
+      {/* Desktop: vertical sidebar */}
+      <div className="hidden lg:block w-full bg-white shadow-sm rounded-xl p-4 pt-6">
+        {menuItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = active === item.id;
+          return (
+            <div
+              key={item.id}
+              className={`flex items-center cursor-pointer w-full mb-6 px-2 py-2 rounded-lg transition-colors ${
+                isActive ? "bg-blue-50" : "hover:bg-gray-50"
+              }`}
+              onClick={() => handleClick(item)}
+            >
+              <Icon size={20} color={isActive ? '#2563eb' : '#9ca3af'} />
+              <span className={`pl-3 text-sm ${isActive ? 'text-blue-600 font-medium' : 'text-gray-500'}`}>
+                {item.label}
+              </span>
+            </div>
+          );
+        })}
 
-      {/* Refunds */}
-      <div
-        className='flex items-center cursor-pointer w-full mb-8'
-        onClick={() => setActive(3)}
-      >
-        <HiOutlineReceiptRefund size={20} color={active === 3 ? 'red' : '#ccc'} />
-        <span className={`pl-3 ${active === 3 ? 'text-red-500' : 'text-gray-500'}`}>
-          Refunds
-        </span>
+        <div
+          className="flex items-center cursor-pointer w-full mb-6 px-2 py-2 rounded-lg hover:bg-red-50 transition-colors"
+          onClick={() => {
+            dispatch(logoutUserAction());
+            navigate("/login");
+          }}
+        >
+          <AiOutlineLogout size={20} color="#9ca3af" />
+          <span className="pl-3 text-sm text-gray-500">Logout</span>
+        </div>
       </div>
-
-      {/* Inbox */}
-      <div
-        className='flex items-center cursor-pointer w-full mb-8'
-        onClick={() => {
-          setActive(4)
-          navigate("/inbox")
-        }}
-      >
-        <AiOutlineMessage size={20} color={active === 4 ? 'red' : '#ccc'} />
-        <span className={`pl-3 ${active === 4 ? 'text-red-500' : 'text-gray-500'}`}>
-          Inbox
-        </span>
-      </div>
-
-      {/* Track Order */}
-      <div
-        className='flex items-center cursor-pointer w-full mb-8'
-        onClick={() => setActive(5)}
-      >
-        <MdOutlineTrackChanges size={20} color={active === 5 ? 'red' : '#ccc'} />
-        <span className={`pl-3 ${active === 5 ? 'text-red-500' : 'text-gray-500'}`}>
-          Track Order
-        </span>
-      </div>
-
-      {/* Payment Methods */}
-      <div
-        className='flex items-center cursor-pointer w-full mb-8'
-        onClick={() => setActive(6)}
-      >
-        <HiOutlineShoppingBag size={20} color={active === 6 ? 'red' : '#ccc'} />
-        <span className={`pl-3 ${active === 6 ? 'text-red-500' : 'text-gray-500'}`}>
-          Payment Methods
-        </span>
-      </div>
-
-      {/* Address */}
-      <div
-        className='flex items-center cursor-pointer w-full mb-8'
-        onClick={() => setActive(7)}
-      >
-        <HiOutlineShoppingBag size={20} color={active === 7 ? 'red' : '#ccc'} />
-        <span className={`pl-3 ${active === 7 ? 'text-red-500' : 'text-gray-500'}`}>
-          Address
-        </span>
-      </div>
-
-      {/* Logout */}
-      <div
-        className='flex items-center cursor-pointer w-full mb-8'
-        onClick={() => {
-          dispatch(logoutUserAction());
-          navigate("/login");
-        }}
-      >
-        <AiOutlineLogout size={20} color={active === 8 ? 'red' : '#ccc'} />
-        <span className={`pl-3 ${active === 8 ? 'text-red-500' : 'text-gray-500'}`}>
-          Logout
-        </span>
-      </div>
-
     </div>
   )
 }

@@ -78,7 +78,7 @@ const ProductCard = ({ data, isEvent }) => {
         {/* Image + Side Icons Row */}
         <div className="flex gap-2">
           <Link
-            to={`${isEvent === true ? `/product/${productId}?isEvent=true` : `/product/${productId}`}`}
+            to={`${isEvent === true ? `/products/${productName.replace(/\s+/g, '-')}?isEvent=true` : `/products/${productName.replace(/\s+/g, '-')}`}`}
             className="flex-1"
           >
             {imageUrl ? (
@@ -139,7 +139,7 @@ const ProductCard = ({ data, isEvent }) => {
         <Link to={`/shop/preview/${shopId}`}>
           <h5 className={`${styles.shop_name}`}>{shopName}</h5>
         </Link>
-        <Link to={`${isEvent === true ? `/product/${productId}?isEvent=true` : `/product/${productId}`}`}>
+        <Link to={`${isEvent === true ? `/products/${productName.replace(/\s+/g, '-')}?isEvent=true` : `/products/${productName.replace(/\s+/g, '-')}`}`}>
           <h4 className="pb-3 font-[500]">
             {productName.length > 40 ? productName.slice(0, 40) + "..." : productName}
           </h4>

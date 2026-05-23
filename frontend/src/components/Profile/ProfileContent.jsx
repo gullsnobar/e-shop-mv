@@ -82,7 +82,7 @@ const ProfileContent = ({ active }) => {
     <div className="w-full">
       {/* profile */}
       {active === 1 && (
-        <div className="w-full max-w-[800px] mx-auto bg-white rounded-2xl shadow-sm p-8">
+        <div className="w-full max-w-[800px] mx-auto bg-white rounded-2xl shadow-sm p-4 md:p-8">
           {/* Avatar Section */}
           <div className="flex flex-col items-center mb-8">
             <div className="relative group">
@@ -290,7 +290,7 @@ const AllOrders = () => {
     });
 
   return (
-    <div className="pl-8 pt-1">
+    <div className="pt-1">
       <DataGrid
         rows={row}
         columns={columns}
@@ -378,7 +378,7 @@ const AllRefundOrders = () => {
     });
 
   return (
-    <div className="pl-8 pt-1">
+    <div className="pt-1">
       <DataGrid
         rows={row}
         columns={columns}
@@ -463,7 +463,7 @@ const TrackOrder = () => {
     });
 
   return (
-    <div className="pl-8 pt-1">
+    <div className="pt-1">
       <DataGrid
         rows={row}
         columns={columns}

@@ -8,6 +8,10 @@ import EventsPage from "./pages/EventsPage"
 import FAQPage from "./pages/FAQPage"
 import ProductDetailsPage from "./pages/ProductDetailsPage"
 import ProfilePage from "./pages/ProfilePage"
+import ShopCreatePage from "./pages/ShopCreatePage"
+import PaymentPage from "./pages/PaymentPage"
+import OrderPage from "./pages/OrderPage"
+import CheckoutPage from "./pages/CheckoutPage"
 
 export { 
     HomePage,
@@ -19,5 +23,9 @@ export {
     EventsPage,
     FAQPage,
     ProductDetailsPage,
-    ProfilePage
+    ProfilePage,
+    ShopCreatePage,
+    PaymentPage,
+    OrderPage,
+    CheckoutPage
 };

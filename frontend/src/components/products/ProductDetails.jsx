@@ -119,38 +119,36 @@ const ProductDetails = ({ data }) => {
           <div className="w-full py-5">
             <div className="block w-full 800px:flex">
               <div className="w-full 800px:w-[50%]">
-                <img
-                  src={`${data && data.images[select]?.url}`}
-                  alt=""
-                  className="w-[80%]"
-                />
-                <div className="w-full flex">
+                <div className="flex items-center justify-center bg-gray-50 rounded-lg p-4">
+                  <img
+                    src={`${data && data.images[select]?.url}`}
+                    alt=""
+                    className="w-full max-h-[350px] object-contain"
+                  />
+                </div>
+                <div className="w-full flex gap-3 mt-4 overflow-x-auto pb-2">
                   {data &&
                     data.images.map((i, index) => (
                       <div
+                        key={index}
                         className={`${
-                          select === 0 ? "border" : "null"
-                        } cursor-pointer`}
+                          select === index ? "border-2 border-[#3321c8]" : "border border-gray-200"
+                        } cursor-pointer rounded-md p-1 flex-shrink-0`}
+                        onClick={() => setSelect(index)}
                       >
                         <img
                           src={`${i?.url}`}
                           alt=""
-                          className="h-[200px] overflow-hidden mr-3 mt-3"
-                          onClick={() => setSelect(index)}
+                          className="h-[80px] w-[80px] object-contain"
                         />
                       </div>
                     ))}
-                  <div
-                    className={`${
-                      select === 1 ? "border" : "null"
-                    } cursor-pointer`}
-                  ></div>
                 </div>
               </div>
-              <div className="w-full 800px:w-[50%] pt-5">
+              <div className="w-full 800px:w-[50%] pt-5 800px:pt-0 800px:pl-8">
                 <h1 className={`${styles.productTitle}`}>{data.name}</h1>
-                <p>{data.description}</p>
-                <div className="flex pt-3">
+                <p className="text-gray-600 text-[15px] leading-7 mt-2">{data.description}</p>
+                <div className="flex pt-3 items-center gap-2">
                   <h4 className={`${styles.productDiscountPrice}`}>
                     {data.discountPrice}$
                   </h4>
@@ -159,7 +157,7 @@ const ProductDetails = ({ data }) => {
                   </h3>
                 </div>
 
-                <div className="flex items-center mt-12 justify-between pr-3">
+                <div className="flex items-center mt-6 justify-between pr-3">
                   <div>
                     <button
                       className="bg-gradient-to-r from-teal-400 to-teal-500 text-white font-bold rounded-l px-4 py-2 shadow-lg hover:opacity-75 transition duration-300 ease-in-out"
@@ -205,26 +203,28 @@ const ProductDetails = ({ data }) => {
                     Add to cart <AiOutlineShoppingCart className="ml-1" />
                   </span>
                 </div>
-                <div className="flex items-center pt-8">
-                  <Link to={`/shop/preview/${data?.shop._id}`}>
-                    <img
-                      src={`${data?.shop?.avatar?.url}`}
-                      alt=""
-                      className="w-[50px] h-[50px] rounded-full mr-2"
-                    />
-                  </Link>
-                  <div className="pr-8">
+                <div className="flex items-center pt-8 flex-wrap gap-4">
+                  <div className="flex items-center">
                     <Link to={`/shop/preview/${data?.shop._id}`}>
-                      <h3 className={`${styles.shop_name} pb-1 pt-1`}>
-                        {data.shop.name}
-                      </h3>
+                      <img
+                        src={`${data?.shop?.avatar?.url}`}
+                        alt=""
+                        className="w-[50px] h-[50px] rounded-full mr-3"
+                      />
                     </Link>
-                    <h5 className="pb-3 text-[15px]">
-                      ({averageRating}/5) Ratings
-                    </h5>
+                    <div>
+                      <Link to={`/shop/preview/${data?.shop._id}`}>
+                        <h3 className={`${styles.shop_name} pb-1 pt-1`}>
+                          {data.shop.name}
+                        </h3>
+                      </Link>
+                      <h5 className="text-[15px] text-gray-500">
+                        ({averageRating}/5) Ratings
+                      </h5>
+                    </div>
                   </div>
                   <div
-                    className={`${styles.button} bg-[#6443d1] mt-4 !rounded !h-11`}
+                    className={`${styles.button} bg-[#6443d1] !rounded !h-11`}
                     onClick={handleMessageSubmit}
                   >
                     <span className="text-white flex items-center">

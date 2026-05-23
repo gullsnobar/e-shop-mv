@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/Login.jsx";
 import SignupPage from "./pages/Signup.jsx";
-import { ActivationPage, HomePage, ProductsPage, EventsPage, BestSellingPage, FAQPage, ProductDetailsPage, ProfilePage } from "./Routes.js";
+import { ActivationPage, HomePage, ProductsPage, EventsPage, BestSellingPage, FAQPage, ProductDetailsPage, ProfilePage, CheckoutPage, PaymentPage, OrderPage, ShopCreatePage } from "./Routes.js";
 import "./App.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -42,12 +42,23 @@ const App = () => {
           <Route path="/best-selling" element={<BestSellingPage />} />
           <Route path="/events" element={<EventsPage />} />
           <Route path="/faq" element={<FAQPage />} />
-            <Route path="/profile" element={
-              <ProtectedRoute isAuthenticated={isAuthenticated}>
-                <ProfilePage />
-              </ProtectedRoute>
-            } />
-
+          <Route path="/profile" element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <ProfilePage />
+            </ProtectedRoute>
+          } />
+          <Route path="/checkout" element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <CheckoutPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/payment" element={<PaymentPage />} />
+          <Route path="/order/success/:id" element={<OrderPage />} />
+          <Route path="/shop-create" element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <ShopCreatePage />
+            </ProtectedRoute>
+          } />
         </Routes>
       </BrowserRouter>
 

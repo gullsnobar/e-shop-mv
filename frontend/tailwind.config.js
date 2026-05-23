@@ -9,6 +9,7 @@ module.exports = {
       screens: {
         sm: "640px",   // small devices
         md: "768px",   // tablets
+        "800px": "800px", // product details breakpoint
         lg: "1024px",  // laptops
         xl: "1280px",  // desktops
         "2xl": "1536px" // large screens

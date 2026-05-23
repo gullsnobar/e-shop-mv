@@ -67,7 +67,7 @@ const Wishlist = ({ setOpenWishlist }) => {
                       <div key={item._id || item.id || index} className="border-b px-4 py-3">
                         <div className="flex items-start gap-3">
                           {imageUrl ? (
-                            <Link to={`/product/${item._id || item.id}`} onClick={() => setOpenWishlist(false)}>
+                            <Link to={`/products/${item.name?.replace(/\s+/g, '-')}`} onClick={() => setOpenWishlist(false)}>
                               <img
                                 src={imageUrl}
                                 alt={item.name || ""}
@@ -82,7 +82,7 @@ const Wishlist = ({ setOpenWishlist }) => {
                           )}
                           <div className="flex-1 min-w-0">
                             <Link
-                              to={`/product/${item._id || item.id}`}
+                              to={`/products/${item.name?.replace(/\s+/g, '-')}`}
                               onClick={() => setOpenWishlist(false)}
                               className="text-[13px] font-medium hover:text-[#3321c8] transition block truncate leading-tight"
                             >

@@ -1,5 +1,5 @@
 html, body {
-  overflow-x: hidden;
+  /* overflow-x: hidden; removed — this clips absolutely-positioned dropdowns */
 }
 
 .App {
