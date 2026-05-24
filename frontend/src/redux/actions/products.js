@@ -7,7 +7,11 @@ export const getAllProducts = () => async (dispatch) => {
   try {
     dispatch(productsLoading());
     const { data } = await axios.get(`${server}/product/get-all-products`);
-    dispatch(productsSuccess(data.products));
+    if (data.products && data.products.length > 0) {
+      dispatch(productsSuccess(data.products));
+    } else {
+      throw new Error("Empty products");
+    }
   } catch (error) {
     // Fallback to static data if API fails
     const normalized = productData.map((item) => ({

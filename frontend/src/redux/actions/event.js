@@ -51,7 +51,11 @@ export const getAllEvents = () => async (dispatch) => {
     dispatch(eventsLoading());
 
     const { data } = await axios.get(`${server}/event/get-all-events`);
-    dispatch(eventsSuccess(data?.events || []));
+    if (data?.events && data.events.length > 0) {
+      dispatch(eventsSuccess(data.events));
+    } else {
+      throw new Error("Empty events");
+    }
   } catch (error) {
     // Fallback: use first 2 products as mock events so section isn't empty
     const fallbackEvents = productData.slice(0, 2).map((item) => ({

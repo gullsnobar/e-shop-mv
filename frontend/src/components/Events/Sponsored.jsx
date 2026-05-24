@@ -6,45 +6,37 @@ const Sponsored = () => {
     <div
       className={`${styles.section} hidden sm:block bg-white py-3 px-5 mb-12 rounded-xl`}
     >
-      <div className="flex flex-wrap justify-between items-center w-full gap-4">
+      <div className="flex flex-wrap justify-between items-center w-full gap-6">
 
-        <div className="w-[170px] h-[70px] p-3 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center hover:shadow-md hover:border-gray-200 transition-all duration-300">
-          <img
-            src="https://images.seeklogo.com/logo-png/12/2/sony-glass-logo-png_seeklogo-129446.png"
-            alt="Sony"
-            className="w-full h-full object-contain"
-          />
-        </div>
-
-        <div className="w-[170px] h-[70px] p-3 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center hover:shadow-md hover:border-gray-200 transition-all duration-300">
+        <div className="w-[220px] h-[120px] bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center hover:shadow-md hover:border-gray-200 transition-all duration-300">
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg"
             alt="Amazon"
-            className="w-full h-full object-contain"
+            className="max-w-[70%] max-h-[70%] object-contain"
           />
         </div>
 
-        <div className="w-[170px] h-[70px] p-3 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center hover:shadow-md hover:border-gray-200 transition-all duration-300">
+        <div className="w-[220px] h-[120px] bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center hover:shadow-md hover:border-gray-200 transition-all duration-300">
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg"
             alt="Google"
-            className="w-full h-full object-contain"
+            className="max-w-[70%] max-h-[70%] object-contain"
           />
         </div>
 
-        <div className="w-[170px] h-[70px] p-3 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center hover:shadow-md hover:border-gray-200 transition-all duration-300">
+        <div className="w-[220px] h-[120px] bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center hover:shadow-md hover:border-gray-200 transition-all duration-300">
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg"
             alt="Netflix"
-            className="w-full h-full object-contain"
+            className="max-w-[70%] max-h-[70%] object-contain"
           />
         </div>
 
-        <div className="w-[170px] h-[70px] p-3 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center hover:shadow-md hover:border-gray-200 transition-all duration-300">
+        <div className="w-[220px] h-[120px] bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center hover:shadow-md hover:border-gray-200 transition-all duration-300">
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg"
             alt="Apple"
-            className="w-full h-full object-contain"
+            className="max-w-[70%] max-h-[70%] object-contain"
           />
         </div>
 

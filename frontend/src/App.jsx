@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/Login.jsx";
 import SignupPage from "./pages/Signup.jsx";
-import { ActivationPage, HomePage, ProductsPage, EventsPage, BestSellingPage, FAQPage, ProductDetailsPage, ProfilePage, CheckoutPage, PaymentPage, OrderPage, ShopCreatePage, ShopLoginPage } from "./Routes.js";
+import { ActivationPage, HomePage, ProductsPage, EventsPage, BestSellingPage, FAQPage, ProductDetailsPage, ProfilePage, CheckoutPage, PaymentPage, OrderPage, ShopCreatePage, ShopLoginPage, ShopHomePage } from "./Routes.js";
 import "./App.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -11,8 +11,8 @@ import { useDispatch } from "react-redux";
 import { getAllProducts } from "./redux/actions/products";
 import { loadUser } from "./redux/actions/user";
 import ProtectedRoute from "./ProtectedRoute"
+import SellerProtectedRoute from "./SellerProtectedRoute"
 import { useSelector } from "react-redux";
-
 const App = () => {
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.user);
@@ -56,6 +56,11 @@ const App = () => {
           <Route path="/order/success/:id" element={<OrderPage />} />
           <Route path="/shop-login" element={<ShopLoginPage />} />
           <Route path="/shop-create" element={<ShopCreatePage />} />
+           <Route path="/shop/:id" element={
+            <SellerProtectedRoute isSeller={true}>
+              <ShopHomePage />
+            </SellerProtectedRoute>
+           } />
         </Routes>
       </BrowserRouter>
 
