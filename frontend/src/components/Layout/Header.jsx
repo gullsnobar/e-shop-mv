@@ -141,7 +141,7 @@ const Header = ({ activeHeading }) => {
 
             {/* Become Seller / Auth */}
             <Link
-              to={`${isSeller ? "/dashboard" : isAuthenticated ? "/shop-create" : "/login"}`}
+              to={`${isSeller ? "/dashboard" : "/shop-create"}`}
               className="flex-shrink-0"
             >
               <button className="h-[45px] px-6 bg-black text-white rounded-lg flex items-center gap-2 text-sm font-medium hover:bg-gray-800 transition-colors">
@@ -367,7 +367,7 @@ const Header = ({ activeHeading }) => {
             <Navbar active={activeHeading} isMobile={true} />
 
             {/* Become Seller */}
-            <Link to={`${isSeller ? "/dashboard" : isAuthenticated ? "/shop-create" : "/login"}`}>
+            <Link to={`${isSeller ? "/dashboard" : "/shop-create"}`}>
               <button className="w-full h-[48px] bg-black text-white rounded-lg flex items-center justify-center gap-2 text-sm font-medium hover:bg-gray-800 transition-colors">
                 {isSeller ? "Go Dashboard" : "Become Seller"}
                 <IoIosArrowForward size={18} />

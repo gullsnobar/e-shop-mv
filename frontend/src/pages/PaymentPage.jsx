@@ -1,17 +1,22 @@
-import React from "react";
-import Header from "../components/Layout/Header";
-import Footer from "../components/Layout/Footer";
+import React from 'react'
+import CheckoutSteps from '../components/Checkout/CheckoutSteps'
+import Footer from '../components/Layout/Footer'
+import Header from '../components/Layout/Header'
+import Payment from "../components/Payment/Payment";
 
 const PaymentPage = () => {
   return (
-    <div>
-      <Header />
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <h2 className="text-xl text-gray-600">Payment Page - Coming Soon</h2>
-      </div>
-      <Footer />
+    <div className='w-full min-h-screen bg-[#f6f9fc]'>
+       <Header />
+       <br />
+       <br />
+       <CheckoutSteps active={2} />
+       <Payment />
+       <br />
+       <br />
+       <Footer />
     </div>
-  );
-};
+  )
+}
 
-export default PaymentPage;
+export default PaymentPage
