@@ -10,9 +10,10 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { getAllProducts } from "./redux/actions/products";
 import { loadUser } from "./redux/actions/user";
-import ProtectedRoute from "./ProtectedRoute"
-import SellerProtectedRoute from "./SellerProtectedRoute"
+import ProtectedRoute from "./routes/ProtectedRoute.jsx"
+import SellerProtectedRoute from "./routes/SellerProtectedRoute.jsx"
 import { useSelector } from "react-redux";
+import { ShopDashboard } from "./routes/ShopRoutes.js";
 const App = () => {
   const dispatch = useDispatch();
   const { isAuthenticated, loading } = useSelector((state) => state.user);
@@ -56,12 +57,20 @@ const App = () => {
           <Route path="/order/success/:id" element={<OrderPage />} />
           <Route path="/shop-login" element={<ShopLoginPage />} />
           <Route path="/shop-create" element={<ShopCreatePage />} />
+
            <Route path="/shop/:id" element={
             <SellerProtectedRoute isSeller={true}>
               <ShopHomePage />
             </SellerProtectedRoute>
            } />
         </Routes>
+
+           <Route path="/dashboard" element={
+            <SellerProtectedRoute>
+              <ShopDashboard />
+            </SellerProtectedRoute>
+           } />
+
       </BrowserRouter>
 
       <ToastContainer position="top-right" autoClose={3000} />
