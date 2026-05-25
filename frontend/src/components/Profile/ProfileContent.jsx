@@ -28,12 +28,20 @@ import { getAllOrdersOfUser } from "../../redux/actions/order";
 
 const ProfileContent = ({ active }) => {
   const { user, error, successMessage } = useSelector((state) => state.user);
-  const [name, setName] = useState(user && user.name);
-  const [email, setEmail] = useState(user && user.email);
-  const [phoneNumber, setPhoneNumber] = useState(user && user.phoneNumber);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [avatar, setAvatar] = useState(null);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (user) {
+      setName(user.name || "");
+      setEmail(user.email || "");
+      setPhoneNumber(user.phoneNumber || "");
+    }
+  }, [user]);
 
   useEffect(() => {
     if (error) {
@@ -52,30 +60,27 @@ const ProfileContent = ({ active }) => {
   };
 
   const handleImage = async (e) => {
-    const reader = new FileReader();
+    const file = e.target.files[0];
+    if (!file) return;
 
-    reader.onload = () => {
-      if (reader.readyState === 2) {
-        setAvatar(reader.result);
-        axios
-          .put(
-            `${server}/user/update-avatar`,
-            { avatar: reader.result },
-            {
-              withCredentials: true,
-            }
-          )
-          .then((response) => {
-            dispatch(loadUser());
-            toast.success("avatar updated successfully!");
-          })
-          .catch((error) => {
-            toast.error(error);
-          });
-      }
-    };
+    const previewUrl = URL.createObjectURL(file);
+    setAvatar(previewUrl);
 
-    reader.readAsDataURL(e.target.files[0]);
+    const formData = new FormData();
+    formData.append("image", file);
+
+    axios
+      .put(`${server}/user/update-avatar`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        withCredentials: true,
+      })
+      .then(() => {
+        dispatch(loadUser());
+        toast.success("Avatar updated successfully!");
+      })
+      .catch((err) => {
+        toast.error(err?.response?.data?.message || "Avatar update failed");
+      });
   };
 
   return (
@@ -485,18 +490,18 @@ const ChangePassword = () => {
 
     await axios
       .put(
-        `${server}/user/update-user-password`,
+        `${server}/user/update-password`,
         { oldPassword, newPassword, confirmPassword },
         { withCredentials: true }
       )
       .then((res) => {
-        toast.success(res.data.success);
+        toast.success(res.data.message || "Password updated successfully");
         setOldPassword("");
         setNewPassword("");
         setConfirmPassword("");
       })
       .catch((error) => {
-        toast.error(error.response.data.message);
+        toast.error(error?.response?.data?.message || "Password update failed");
       });
   };
   return (

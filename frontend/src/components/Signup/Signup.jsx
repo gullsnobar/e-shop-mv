@@ -57,7 +57,7 @@ const SignUp = () => {
         setPassword("");
         setAvatar(null);
 
-        navigate("/login");
+        navigate("/");
       } else {
         toast.error(res.data.message || "Signup failed");
       }

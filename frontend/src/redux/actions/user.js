@@ -147,6 +147,7 @@ export const deleteUserAddress = (id) => async (dispatch) => {
 // logout user
 export const logoutUserAction = () => async (dispatch) => {
   try {
+    setAuthToken();
     await axios.get(`${server}/user/logout`, { withCredentials: true });
   } catch (_) {
     // ignore logout API errors

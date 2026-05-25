@@ -168,10 +168,11 @@ router.get(
   isAuthenticated,
   catchAsyncError(async (req, res, next) => {
     try {
+      const isProd = process.env.NODE_ENV === "PRODUCTION";
       res.clearCookie("token", {
         httpOnly: true,
-        sameSite: "None",
-        secure: true,
+        sameSite: isProd ? "none" : "lax",
+        secure: isProd,
         path: "/",
       });
 
@@ -237,15 +238,22 @@ router.put(
         return next(new ErrorHandler("User does not exist", 400));
       }
 
-      const existAvatarPath = `uploads/${existsUser.avatar}`;
-      if (fs.existsSync(existAvatarPath)) {
-        fs.unlinkSync(existAvatarPath);
+      // Delete old local avatar file if it exists
+      if (existsUser.avatar && existsUser.avatar.public_id) {
+        const oldPath = `uploads/${existsUser.avatar.public_id}`;
+        if (fs.existsSync(oldPath)) {
+          fs.unlinkSync(oldPath);
+        }
       }
 
-      const fileUrl = req.file.filename;
+      const avatar = {
+        public_id: req.file.filename,
+        url: `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`,
+      };
+
       const user = await User.findByIdAndUpdate(
         req.user.id,
-        { avatar: fileUrl },
+        { avatar },
         { new: true }
       );
 

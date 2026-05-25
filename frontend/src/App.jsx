@@ -15,7 +15,7 @@ import SellerProtectedRoute from "./SellerProtectedRoute"
 import { useSelector } from "react-redux";
 const App = () => {
   const dispatch = useDispatch();
-  const { isAuthenticated } = useSelector((state) => state.user);
+  const { isAuthenticated, loading } = useSelector((state) => state.user);
 
   useEffect(() => {
     dispatch(getAllProducts());
@@ -43,12 +43,12 @@ const App = () => {
           <Route path="/events" element={<EventsPage />} />
           <Route path="/faq" element={<FAQPage />} />
           <Route path="/profile" element={
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
+            <ProtectedRoute isAuthenticated={isAuthenticated} loading={loading}>
               <ProfilePage />
             </ProtectedRoute>
           } />
           <Route path="/checkout" element={
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
+            <ProtectedRoute isAuthenticated={isAuthenticated} loading={loading}>
               <CheckoutPage />
             </ProtectedRoute>
           } />
