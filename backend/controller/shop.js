@@ -2,11 +2,10 @@ const express = require("express");
 const path = require("path");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
-const mongoose = require("mongoose");
 const sendMail = require("../utils/sendMail");
 const Shop = require("../model/shop");
 const { isAuthenticated, isSeller, isAdmin } = require("../middleware/auth");
-const cloudinary = require("../cloudinary");
+const cloudinary = require("cloudinary");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ErrorHandler = require("../utils/ErrorHandler");
 const sendShopToken = require("../utils/shopToken");
@@ -14,50 +13,33 @@ const sendShopToken = require("../utils/shopToken");
 // create shop
 router.post("/create-shop", catchAsyncErrors(async (req, res, next) => {
   try {
-    const { name, email, password, avatar, zipCode, address, phoneNumber } = req.body;
-
-    if (!email || !name || !password) {
-      return next(new ErrorHandler("Please provide all required fields", 400));
-    }
-
+    const { email } = req.body;
     const sellerEmail = await Shop.findOne({ email });
     if (sellerEmail) {
       return next(new ErrorHandler("User already exists", 400));
     }
 
-    let sellerAvatar = { public_id: "", url: "" };
+    const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
+      folder: "avatars",
+    });
 
-    const hasCloudinaryCreds = process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET;
-
-    if (avatar && avatar.startsWith("data:")) {
-      if (hasCloudinaryCreds) {
-        try {
-          const myCloud = await cloudinary.uploader.upload(avatar, {
-            folder: "avatars",
-          });
-          sellerAvatar = {
-            public_id: myCloud.public_id,
-            url: myCloud.secure_url,
-          };
-        } catch (cloudErr) {
-          console.error("[createShop] Cloudinary upload failed:", cloudErr.message);
-        }
-      }
-    }
 
     const seller = {
-      name,
-      email,
-      password,
-      avatar: sellerAvatar,
-      address,
-      phoneNumber,
-      zipCode,
+      name: req.body.name,
+      email: email,
+      password: req.body.password,
+      avatar: {
+        public_id: myCloud.public_id,
+        url: myCloud.secure_url,
+      },
+      address: req.body.address,
+      phoneNumber: req.body.phoneNumber,
+      zipCode: req.body.zipCode,
     };
 
     const activationToken = createActivationToken(seller);
 
-    const activationUrl = `${process.env.FRONTEND_URL || "http://localhost:5173"}/seller/activation/${activationToken}`;
+    const activationUrl = `https://eshop-tutorial-pyri.vercel.app/seller/activation/${activationToken}`;
 
     try {
       await sendMail({
@@ -67,13 +49,13 @@ router.post("/create-shop", catchAsyncErrors(async (req, res, next) => {
       });
       res.status(201).json({
         success: true,
-        message: `Please check your email (${seller.email}) to activate your shop!`,
+        message: `please check your email:- ${seller.email} to activate your shop!`,
       });
     } catch (error) {
-      return next(new ErrorHandler("Failed to send activation email. Please check your SMTP settings.", 500));
+      return next(new ErrorHandler(error.message, 500));
     }
   } catch (error) {
-    return next(new ErrorHandler(error.message || "Something went wrong", 400));
+    return next(new ErrorHandler(error.message, 400));
   }
 }));
 
@@ -132,34 +114,17 @@ router.post(
     try {
       const { email, password } = req.body;
 
-      console.log("=== SHOP LOGIN DEBUG ===");
-      console.log("Request body:", req.body);
-      console.log("Email received:", email);
-      console.log("Password present:", password ? "YES" : "NO");
-
       if (!email || !password) {
-        console.log("ERROR: Missing email or password");
         return next(new ErrorHandler("Please provide the all fields!", 400));
       }
 
       const user = await Shop.findOne({ email }).select("+password");
 
-      console.log("SHOP FOUND IN DB:", user ? "YES" : "NO");
-      if (user) {
-        console.log("Shop ID:", user._id);
-        console.log("Shop name:", user.name);
-        console.log("Shop email:", user.email);
-      } else {
-        console.log("No shop found with email:", email);
-        console.log("HINT: The shop may not be activated yet. Registration sends an activation email. The shop is only created in DB after clicking the activation link.");
-      }
-
       if (!user) {
-        return next(new ErrorHandler("User doesn't exists! Please register and activate your shop via the email link.", 400));
+        return next(new ErrorHandler("User doesn't exists!", 400));
       }
 
       const isPasswordValid = await user.comparePassword(password);
-      console.log("Password valid:", isPasswordValid);
 
       if (!isPasswordValid) {
         return next(
@@ -169,7 +134,6 @@ router.post(
 
       sendShopToken(user, 201, res);
     } catch (error) {
-      console.log("LOGIN ERROR:", error.message);
       return next(new ErrorHandler(error.message, 500));
     }
   })
@@ -223,14 +187,8 @@ router.get(
   "/get-shop-info/:id",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-        return res.status(200).json({
-          success: true,
-          shop: null,
-        });
-      }
       const shop = await Shop.findById(req.params.id);
-      res.status(200).json({
+      res.status(201).json({
         success: true,
         shop,
       });
@@ -250,15 +208,9 @@ router.put(
 
         const imageId = existsSeller.avatar.public_id;
 
-        if (imageId) {
-          try {
-            await cloudinary.uploader.destroy(imageId);
-          } catch (destroyErr) {
-            console.error("[updateShopAvatar] Cloudinary destroy failed:", destroyErr.message);
-          }
-        }
+        await cloudinary.v2.uploader.destroy(imageId);
 
-        const myCloud = await cloudinary.uploader.upload(req.body.avatar, {
+        const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
           folder: "avatars",
           width: 150,
         });
