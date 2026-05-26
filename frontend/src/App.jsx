@@ -66,7 +66,11 @@ const App = () => {
               <CheckoutPage />
             </ProtectedRoute>
           } />
-          <Route path="/payment" element={<PaymentPage />} />
+          <Route path="/payment" element={
+            <ProtectedRoute isAuthenticated={isAuthenticated} loading={loading}>
+              <PaymentPage />
+            </ProtectedRoute>
+          } />
           <Route path="/order/success/:id" element={<OrderPage />} />
           <Route path="/shop-login" element={<ShopLoginPage />} />
           <Route path="/shop-create" element={<ShopCreatePage />} />
