@@ -274,10 +274,11 @@ export const navItems = [
         },
         {
           public_id: "test",
-          url: "https://www.istorebangladesh.com/images/thumbs/0000286_macbook-pro-m1_550.png",
+          url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='550' height='400'%3E%3Crect width='550' height='400' fill='%23f0f0f0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='20' fill='%23999'%3EProduct Image%3C/text%3E%3C/svg%3E",
         },
       ],
       shop: {
+        _id: "111111111111111111111111",
         name: "Apple inc.",
         shop_avatar: {
           public_id: "test",
@@ -308,6 +309,7 @@ export const navItems = [
         },
       ],
       shop: {
+        _id: "222222222222222222222222",
         name: "Amazon Ltd",
         shop_avatar: {
           public_id: "test",
@@ -334,10 +336,11 @@ export const navItems = [
         },
         {
           public_id: "test",
-          url: "https://www.istorebangladesh.com/images/thumbs/0000286_macbook-pro-m1_550.png",
+          url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='550' height='400'%3E%3Crect width='550' height='400' fill='%23f0f0f0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='20' fill='%23999'%3EProduct Image%3C/text%3E%3C/svg%3E",
         },
       ],
       shop: {
+        _id: "111111111111111111111111",
         name: "Apple inc.",
         shop_avatar: {
           public_id: "test",
@@ -369,6 +372,7 @@ export const navItems = [
         },
       ],
       shop: {
+        _id: "333333333333333333333333",
         name: "Gull's Watch House",
         shop_avatar: {
           public_id: "test",
@@ -400,6 +404,7 @@ export const navItems = [
         },
       ],
       shop: {
+        _id: "444444444444444444444444",
         name: "Alisha Shoes Mart",
         shop_avatar: {
           public_id: "test",
@@ -430,6 +435,7 @@ export const navItems = [
         },
       ],
       shop: {
+        _id: "555555555555555555555555",
         name: "Asus Ltd",
         shop_avatar: {
           public_id: "test",
@@ -469,6 +475,7 @@ export const navItems = [
         },
       ],
       shop: {
+        _id: "333333333333333333333333",
         name: "Gull's Watch House",
         shop_avatar: {
           public_id: "test",
@@ -498,6 +505,7 @@ export const navItems = [
         },
       ],
       shop: {
+        _id: "555555555555555555555555",
         name: "Asus Ltd",
         shop_avatar: {
           public_id: "test",
@@ -537,6 +545,7 @@ export const navItems = [
         },
       ],
       shop: {
+        _id: "222222222222222222222222",
         name: "Amazon Ltd",
         shop_avatar: {
           public_id: "test",
@@ -566,6 +575,7 @@ export const navItems = [
         },
       ],
       shop: {
+        _id: "555555555555555555555555",
         name: "Asus Ltd",
         shop_avatar: {
           public_id: "test",

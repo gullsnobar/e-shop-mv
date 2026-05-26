@@ -13,7 +13,20 @@ import { loadUser } from "./redux/actions/user";
 import ProtectedRoute from "./routes/ProtectedRoute.jsx"
 import SellerProtectedRoute from "./routes/SellerProtectedRoute.jsx"
 import { useSelector } from "react-redux";
-import { ShopDashboard } from "./routes/ShopRoutes.js";
+import ShopDashboardPage from "./pages/Shop/ShopDashboardPage.jsx";
+import ShopPreviewPage from "./pages/Shop/ShopPreviewPage.jsx";
+import InboxPage from "./pages/InboxPage.jsx";
+import ShopAllOrders from "./pages/Shop/ShopAllOrders.jsx";
+import ShopAllProducts from "./pages/Shop/ShopAllProducts.jsx";
+import ShopCreateProduct from "./pages/Shop/ShopCreateProduct.jsx";
+import ShopAllEvents from "./pages/Shop/ShopAllEvents.jsx";
+import ShopCreateEvents from "./pages/Shop/ShopCreateEvents.jsx";
+import ShopWithDrawMoneyPage from "./pages/Shop/ShopWithDrawMoneyPage.jsx";
+import ShopInboxPage from "./pages/Shop/ShopInboxPage.jsx";
+import ShopAllCoupouns from "./pages/Shop/ShopAllCoupouns.jsx";
+import ShopAllRefunds from "./pages/Shop/ShopAllRefunds.jsx";
+import ShopSettingsPage from "./pages/Shop/ShopSettingsPage.jsx";
+import ShopOrderDetails from "./pages/Shop/ShopOrderDetails.jsx";
 const App = () => {
   const dispatch = useDispatch();
   const { isAuthenticated, loading } = useSelector((state) => state.user);
@@ -63,14 +76,69 @@ const App = () => {
               <ShopHomePage />
             </SellerProtectedRoute>
            } />
-        </Routes>
-
            <Route path="/dashboard" element={
             <SellerProtectedRoute>
-              <ShopDashboard />
+              <ShopDashboardPage />
             </SellerProtectedRoute>
            } />
-
+           <Route path="/shop/preview/:id" element={<ShopPreviewPage />} />
+           <Route path="/inbox" element={<InboxPage />} />
+           <Route path="/dashboard-orders" element={
+            <SellerProtectedRoute>
+              <ShopAllOrders />
+            </SellerProtectedRoute>
+           } />
+           <Route path="/dashboard-products" element={
+            <SellerProtectedRoute>
+              <ShopAllProducts />
+            </SellerProtectedRoute>
+           } />
+           <Route path="/dashboard-create-product" element={
+            <SellerProtectedRoute>
+              <ShopCreateProduct />
+            </SellerProtectedRoute>
+           } />
+           <Route path="/dashboard-events" element={
+            <SellerProtectedRoute>
+              <ShopAllEvents />
+            </SellerProtectedRoute>
+           } />
+           <Route path="/dashboard-create-event" element={
+            <SellerProtectedRoute>
+              <ShopCreateEvents />
+            </SellerProtectedRoute>
+           } />
+           <Route path="/dashboard-withdraw-money" element={
+            <SellerProtectedRoute>
+              <ShopWithDrawMoneyPage />
+            </SellerProtectedRoute>
+           } />
+           <Route path="/dashboard-messages" element={
+            <SellerProtectedRoute>
+              <ShopInboxPage />
+            </SellerProtectedRoute>
+           } />
+           <Route path="/dashboard-coupouns" element={
+            <SellerProtectedRoute>
+              <ShopAllCoupouns />
+            </SellerProtectedRoute>
+           } />
+           <Route path="/dashboard-refunds" element={
+            <SellerProtectedRoute>
+              <ShopAllRefunds />
+            </SellerProtectedRoute>
+           } />
+           <Route path="/settings" element={
+            <SellerProtectedRoute>
+              <ShopSettingsPage />
+            </SellerProtectedRoute>
+           } />
+           <Route path="/dashboard/order/:id" element={
+            <SellerProtectedRoute>
+              <ShopOrderDetails />
+            </SellerProtectedRoute>
+           } />
+        </Routes>
       </BrowserRouter>
 
       <ToastContainer position="top-right" autoClose={3000} />

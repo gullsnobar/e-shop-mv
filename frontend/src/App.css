@@ -148,3 +148,13 @@ input[type="password"] {
   display: block;
 }
 
+.greenColor {
+  color: #16a34a;
+  font-weight: 500;
+}
+
+.redColor {
+  color: #dc2626;
+  font-weight: 500;
+}
+

@@ -34,4 +34,4 @@ export {
     SellerActivationPage,
     ShopLoginPage,
     ShopHomePage
-} from "./routes/Routes.js"
+};
