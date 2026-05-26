@@ -132,17 +132,34 @@ router.post(
     try {
       const { email, password } = req.body;
 
+      console.log("=== SHOP LOGIN DEBUG ===");
+      console.log("Request body:", req.body);
+      console.log("Email received:", email);
+      console.log("Password present:", password ? "YES" : "NO");
+
       if (!email || !password) {
+        console.log("ERROR: Missing email or password");
         return next(new ErrorHandler("Please provide the all fields!", 400));
       }
 
       const user = await Shop.findOne({ email }).select("+password");
 
+      console.log("SHOP FOUND IN DB:", user ? "YES" : "NO");
+      if (user) {
+        console.log("Shop ID:", user._id);
+        console.log("Shop name:", user.name);
+        console.log("Shop email:", user.email);
+      } else {
+        console.log("No shop found with email:", email);
+        console.log("HINT: The shop may not be activated yet. Registration sends an activation email. The shop is only created in DB after clicking the activation link.");
+      }
+
       if (!user) {
-        return next(new ErrorHandler("User doesn't exists!", 400));
+        return next(new ErrorHandler("User doesn't exists! Please register and activate your shop via the email link.", 400));
       }
 
       const isPasswordValid = await user.comparePassword(password);
+      console.log("Password valid:", isPasswordValid);
 
       if (!isPasswordValid) {
         return next(
@@ -152,6 +169,7 @@ router.post(
 
       sendShopToken(user, 201, res);
     } catch (error) {
+      console.log("LOGIN ERROR:", error.message);
       return next(new ErrorHandler(error.message, 500));
     }
   })

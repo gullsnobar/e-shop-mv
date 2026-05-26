@@ -33,6 +33,11 @@ const ProfileContent = ({ active }) => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [avatar, setAvatar] = useState(null);
+  const [zipCode, setZipCode] = useState("");
+  const [address1, setAddress1] = useState("");
+  const [address2, setAddress2] = useState("");
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -40,6 +45,12 @@ const ProfileContent = ({ active }) => {
       setName(user.name || "");
       setEmail(user.email || "");
       setPhoneNumber(user.phoneNumber || "");
+      if (user.addresses && user.addresses.length > 0) {
+        const addr = user.addresses[0];
+        setZipCode(addr.zipCode || "");
+        setAddress1(addr.address1 || "");
+        setAddress2(addr.address2 || "");
+      }
     }
   }, [user]);
 
@@ -54,8 +65,73 @@ const ProfileContent = ({ active }) => {
     }
   }, [error, successMessage]);
 
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  const validateField = (field, value) => {
+    switch (field) {
+      case "name":
+        if (!value || value.trim().length === 0) return "Full Name is required";
+        if (value.trim().length < 3) return "Name must be at least 3 characters";
+        if (/^\d+$/.test(value.trim())) return "Name cannot be numbers only";
+        return "";
+      case "email":
+        if (!value || value.trim().length === 0) return "Email is required";
+        if (!emailRegex.test(value.trim())) return "Please enter a valid email address";
+        return "";
+      case "phoneNumber":
+        if (!value || value.trim().length === 0) return "Phone Number is required";
+        if (!/^\d+$/.test(value.trim())) return "Phone Number must contain only numbers";
+        if (value.trim().length < 10 || value.trim().length > 15) return "Phone Number must be 10-15 digits";
+        return "";
+      case "zipCode":
+        if (value && !/^\d+$/.test(value.trim())) return "Zip Code must contain only numbers";
+        if (value && value.trim().length < 4) return "Zip Code must be at least 4 digits";
+        return "";
+      case "address1":
+        if (value && value.trim().length > 0 && value.trim().length < 3) return "Address must be at least 3 characters";
+        return "";
+      case "address2":
+        return "";
+      case "password":
+        if (!value || value.length === 0) return "Password is required to confirm changes";
+        return "";
+      default:
+        return "";
+    }
+  };
+
+  const handleBlur = (field, value) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    setErrors((prev) => ({ ...prev, [field]: validateField(field, value) }));
+  };
+
+  const handleChange = (field, value, setter) => {
+    setter(value);
+    if (touched[field]) {
+      setErrors((prev) => ({ ...prev, [field]: validateField(field, value) }));
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {
+      name: validateField("name", name),
+      email: validateField("email", email),
+      phoneNumber: validateField("phoneNumber", phoneNumber),
+      zipCode: validateField("zipCode", zipCode),
+      address1: validateField("address1", address1),
+      password: validateField("password", password),
+    };
+    setErrors(newErrors);
+    setTouched({ name: true, email: true, phoneNumber: true, zipCode: true, address1: true, password: true });
+    return !Object.values(newErrors).some((err) => err !== "");
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!validateForm()) {
+      toast.error("Please fix the validation errors before submitting");
+      return;
+    }
     dispatch(updateUserInformation(name, email, phoneNumber, password));
   };
 
@@ -87,20 +163,20 @@ const ProfileContent = ({ active }) => {
     <div className="w-full">
       {/* profile */}
       {active === 1 && (
-        <div className="w-full max-w-[800px] mx-auto bg-white rounded-2xl shadow-sm p-4 md:p-8">
+        <div className="w-full max-w-[800px] mx-auto bg-white rounded-xl shadow-sm p-6 md:p-10">
           {/* Avatar Section */}
-          <div className="flex flex-col items-center mb-8">
-            <div className="relative group">
+          <div className="flex justify-center mb-8">
+            <div className="relative">
               <img
-                src={user?.avatar?.url || "https://via.placeholder.com/150"}
-                className="w-[120px] h-[120px] rounded-full object-cover border-4 border-gray-100 shadow-md"
+                src={user?.avatar?.url || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Crect width='120' height='120' fill='%23e5e7eb'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='40' fill='%239ca3af'%3E👤%3C/text%3E%3C/svg%3E"}
+                className="w-[100px] h-[100px] rounded-full object-cover ring-4 ring-gray-50"
                 alt="Profile"
               />
               <label
                 htmlFor="image"
-                className="absolute bottom-0 right-0 w-9 h-9 bg-white rounded-full flex items-center justify-center cursor-pointer shadow-md border border-gray-200 hover:bg-gray-50 transition-colors"
+                className="absolute bottom-0 right-0 w-8 h-8 bg-white rounded-full flex items-center justify-center cursor-pointer shadow-sm border border-gray-200 hover:bg-gray-50 transition-colors"
               >
-                <AiOutlineCamera size={16} className="text-gray-600" />
+                <AiOutlineCamera size={16} className="text-gray-500" />
                 <input
                   type="file"
                   id="image"
@@ -110,74 +186,145 @@ const ProfileContent = ({ active }) => {
                 />
               </label>
             </div>
-            <h2 className="mt-4 text-xl font-semibold text-gray-800">{user?.name}</h2>
-            <p className="text-sm text-gray-500">{user?.email}</p>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-[13px] font-medium text-gray-700 mb-1.5">
                   Full Name
                 </label>
                 <input
                   type="text"
-                  required
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  onChange={(e) => handleChange("name", e.target.value, setName)}
+                  onBlur={() => handleBlur("name", name)}
+                  className={`w-full px-4 h-[42px] border rounded-lg text-[14px] text-gray-800 placeholder-gray-400 focus:outline-none focus:border-gray-400 transition-colors ${
+                    errors.name && touched.name ? "border-red-300 bg-red-50" : "border-gray-200"
+                  }`}
                 />
+                {errors.name && touched.name && (
+                  <p className="text-[12px] text-red-500 mt-1">{errors.name}</p>
+                )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-[13px] font-medium text-gray-700 mb-1.5">
                   Email Address
                 </label>
                 <input
-                  type="email"
-                  required
+                  type="text"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  onChange={(e) => handleChange("email", e.target.value, setEmail)}
+                  onBlur={() => handleBlur("email", email)}
+                  className={`w-full px-4 h-[42px] border rounded-lg text-[14px] text-gray-800 placeholder-gray-400 focus:outline-none focus:border-gray-400 transition-colors ${
+                    errors.email && touched.email ? "border-red-300 bg-red-50" : "border-gray-200"
+                  }`}
                 />
+                {errors.email && touched.email && (
+                  <p className="text-[12px] text-red-500 mt-1">{errors.email}</p>
+                )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-[13px] font-medium text-gray-700 mb-1.5">
                   Phone Number
                 </label>
                 <input
-                  type="tel"
-                  required
+                  type="text"
                   value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  onChange={(e) => handleChange("phoneNumber", e.target.value, setPhoneNumber)}
+                  onBlur={() => handleBlur("phoneNumber", phoneNumber)}
+                  placeholder="Enter phone number..."
+                  className={`w-full px-4 h-[42px] border rounded-lg text-[14px] text-gray-800 placeholder-gray-400 focus:outline-none focus:border-gray-400 transition-colors ${
+                    errors.phoneNumber && touched.phoneNumber ? "border-red-300 bg-red-50" : "border-gray-200"
+                  }`}
                 />
+                {errors.phoneNumber && touched.phoneNumber && (
+                  <p className="text-[12px] text-red-500 mt-1">{errors.phoneNumber}</p>
+                )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Current Password
+                <label className="block text-[13px] font-medium text-gray-700 mb-1.5">
+                  Zip Code
                 </label>
                 <input
-                  type="password"
-                  placeholder="Enter password to confirm changes"
-                  autoComplete="new-password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-gray-400"
+                  type="text"
+                  value={zipCode}
+                  onChange={(e) => handleChange("zipCode", e.target.value, setZipCode)}
+                  onBlur={() => handleBlur("zipCode", zipCode)}
+                  placeholder="Enter zip code..."
+                  className={`w-full px-4 h-[42px] border rounded-lg text-[14px] text-gray-800 placeholder-gray-400 focus:outline-none focus:border-gray-400 transition-colors ${
+                    errors.zipCode && touched.zipCode ? "border-red-300 bg-red-50" : "border-gray-200"
+                  }`}
+                />
+                {errors.zipCode && touched.zipCode && (
+                  <p className="text-[12px] text-red-500 mt-1">{errors.zipCode}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-[13px] font-medium text-gray-700 mb-1.5">
+                  Address 1
+                </label>
+                <input
+                  type="text"
+                  value={address1}
+                  onChange={(e) => handleChange("address1", e.target.value, setAddress1)}
+                  onBlur={() => handleBlur("address1", address1)}
+                  placeholder="Enter address line 1..."
+                  className={`w-full px-4 h-[42px] border rounded-lg text-[14px] text-gray-800 placeholder-gray-400 focus:outline-none focus:border-gray-400 transition-colors ${
+                    errors.address1 && touched.address1 ? "border-red-300 bg-red-50" : "border-gray-200"
+                  }`}
+                />
+                {errors.address1 && touched.address1 && (
+                  <p className="text-[12px] text-red-500 mt-1">{errors.address1}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-[13px] font-medium text-gray-700 mb-1.5">
+                  Address 2
+                </label>
+                <input
+                  type="text"
+                  value={address2}
+                  onChange={(e) => handleChange("address2", e.target.value, setAddress2)}
+                  onBlur={() => handleBlur("address2", address2)}
+                  placeholder="Enter address line 2..."
+                  className="w-full px-4 h-[42px] border border-gray-200 rounded-lg text-[14px] text-gray-800 placeholder-gray-400 focus:outline-none focus:border-gray-400 transition-colors"
                 />
               </div>
             </div>
 
-            <div className="pt-4">
+            <div>
+              <label className="block text-[13px] font-medium text-gray-700 mb-1.5">
+                Confirm Password <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => handleChange("password", e.target.value, setPassword)}
+                onBlur={() => handleBlur("password", password)}
+                placeholder="Enter current password to confirm changes"
+                autoComplete="current-password"
+                className={`w-full px-4 h-[42px] border rounded-lg text-[14px] text-gray-800 placeholder-gray-400 focus:outline-none focus:border-gray-400 transition-colors ${
+                  errors.password && touched.password ? "border-red-300 bg-red-50" : "border-gray-200"
+                }`}
+              />
+              {errors.password && touched.password && (
+                <p className="text-[12px] text-red-500 mt-1">{errors.password}</p>
+              )}
+            </div>
+
+            <div className="pt-2">
               <button
                 type="submit"
-                className="px-8 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors shadow-sm"
+                className="w-full md:w-auto px-10 h-[44px] bg-[#3a24db] text-white text-[14px] font-medium rounded-lg hover:bg-[#2f1eb5] active:bg-[#261a94] transition-colors"
               >
-                Save Changes
+                Update
               </button>
             </div>
           </form>

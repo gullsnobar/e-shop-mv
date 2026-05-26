@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/Login.jsx";
 import SignupPage from "./pages/Signup.jsx";
-import { ActivationPage, HomePage, ProductsPage, EventsPage, BestSellingPage, FAQPage, ProductDetailsPage, ProfilePage, CheckoutPage, PaymentPage, OrderPage, ShopCreatePage, ShopLoginPage, ShopHomePage } from "./Routes.js";
+import { ActivationPage, HomePage, ProductsPage, EventsPage, BestSellingPage, FAQPage, ProductDetailsPage, ProfilePage, CheckoutPage, PaymentPage, OrderPage, ShopCreatePage, ShopLoginPage, ShopHomePage, SellerActivationPage } from "./Routes.js";
 import "./App.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -70,6 +70,7 @@ const App = () => {
           <Route path="/order/success/:id" element={<OrderPage />} />
           <Route path="/shop-login" element={<ShopLoginPage />} />
           <Route path="/shop-create" element={<ShopCreatePage />} />
+          <Route path="/seller/activation/:activation_token" element={<SellerActivationPage />} />
 
            <Route path="/shop/:id" element={
             <SellerProtectedRoute isSeller={true}>
