@@ -5,7 +5,11 @@ const User = require("../model/user");
 const Shop = require("../model/shop");
 
 exports.isAuthenticated = catchAsyncErrors(async(req,res,next) => {
-    const {token} = req.cookies;
+    let token = req.cookies?.token;
+
+    if(!token && req.headers.authorization?.startsWith("Bearer ")){
+        token = req.headers.authorization.substring(7);
+    }
 
     if(!token){
         return next(new ErrorHandler("Please login to continue", 401));
@@ -20,7 +24,11 @@ exports.isAuthenticated = catchAsyncErrors(async(req,res,next) => {
 
 
 exports.isSeller = catchAsyncErrors(async(req,res,next) => {
-    const {seller_token} = req.cookies;
+    let seller_token = req.cookies?.seller_token;
+    if(!seller_token && req.headers.authorization?.startsWith("Bearer ")){
+        seller_token = req.headers.authorization.substring(7);
+    }
+
     if(!seller_token){
         return next(new ErrorHandler("Please login to continue", 401));
     }

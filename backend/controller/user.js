@@ -157,11 +157,12 @@ router.get(
   "/logout",
   catchAsyncErrors(async (req, res, next) => {
     try {
+      const isProd = process.env.NODE_ENV === "PRODUCTION";
       res.cookie("token", null, {
         expires: new Date(Date.now()),
         httpOnly: true,
-        sameSite: "none",
-        secure: true,
+        sameSite: isProd ? "none" : "lax",
+        secure: isProd,
       });
       res.status(201).json({
         success: true,

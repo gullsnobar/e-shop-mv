@@ -13,33 +13,38 @@ const sendShopToken = require("../utils/shopToken");
 // create shop
 router.post("/create-shop", catchAsyncErrors(async (req, res, next) => {
   try {
-    const { email } = req.body;
+    const { name, email, password, avatar, address, phoneNumber, zipCode } = req.body;
+
+    // validate required fields
+    if (!name || !email || !password || !avatar || !address || !phoneNumber || !zipCode) {
+      return next(new ErrorHandler("Please provide all required fields", 400));
+    }
+
     const sellerEmail = await Shop.findOne({ email });
     if (sellerEmail) {
       return next(new ErrorHandler("User already exists", 400));
     }
 
-    const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
+    const myCloud = await cloudinary.v2.uploader.upload(avatar, {
       folder: "avatars",
     });
 
-
     const seller = {
-      name: req.body.name,
-      email: email,
-      password: req.body.password,
+      name,
+      email,
+      password,
       avatar: {
         public_id: myCloud.public_id,
         url: myCloud.secure_url,
       },
-      address: req.body.address,
-      phoneNumber: req.body.phoneNumber,
-      zipCode: req.body.zipCode,
+      address,
+      phoneNumber,
+      zipCode,
     };
 
     const activationToken = createActivationToken(seller);
 
-    const activationUrl = `https://eshop-tutorial-pyri.vercel.app/seller/activation/${activationToken}`;
+    const activationUrl = `${process.env.FRONTEND_URL || "http://localhost:5173"}/seller/activation/${activationToken}`;
 
     try {
       await sendMail({
@@ -55,7 +60,7 @@ router.post("/create-shop", catchAsyncErrors(async (req, res, next) => {
       return next(new ErrorHandler(error.message, 500));
     }
   } catch (error) {
-    return next(new ErrorHandler(error.message, 400));
+    return next(new ErrorHandler(error.message, 500));
   }
 }));
 
@@ -121,14 +126,14 @@ router.post(
       const user = await Shop.findOne({ email }).select("+password");
 
       if (!user) {
-        return next(new ErrorHandler("User doesn't exists!", 400));
+        return next(new ErrorHandler("User doesn't exist!", 400));
       }
 
       const isPasswordValid = await user.comparePassword(password);
 
       if (!isPasswordValid) {
         return next(
-          new ErrorHandler("Please provide the correct information", 400)
+          new ErrorHandler("Invalid email or password", 400)
         );
       }
 
@@ -166,11 +171,12 @@ router.get(
   "/logout",
   catchAsyncErrors(async (req, res, next) => {
     try {
+      const isProd = process.env.NODE_ENV === "PRODUCTION";
       res.cookie("seller_token", null, {
         expires: new Date(Date.now()),
         httpOnly: true,
-        sameSite: "none",
-        secure: true,
+        sameSite: isProd ? "none" : "lax",
+        secure: isProd,
       });
       res.status(201).json({
         success: true,

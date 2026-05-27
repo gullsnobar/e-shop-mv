@@ -34,14 +34,14 @@ const orderSchema = new mongoose.Schema({
     },
     paidAt:{
         type: Date,
-        default: Date.now(),
+        default: Date.now,
     },
     deliveredAt: {
         type: Date,
     },
     createdAt:{
         type: Date,
-        default: Date.now(),
+        default: Date.now,
     },
 });
 

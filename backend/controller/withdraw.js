@@ -26,9 +26,6 @@ router.post(
           subject: "Withdraw Request",
           message: `Hello ${req.seller.name}, Your withdraw request of ${amount}$ is processing. It will take 3days to 7days to processing! `,
         });
-        res.status(201).json({
-          success: true,
-        });
       } catch (error) {
         return next(new ErrorHandler(error.message, 500));
       }

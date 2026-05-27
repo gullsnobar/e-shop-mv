@@ -7,40 +7,19 @@ import { useNavigate } from "react-router-dom";
 import { AiOutlineArrowRight, AiOutlineSend } from "react-icons/ai";
 import styles from "../../styles/styles";
 import { TfiGallery } from "react-icons/tfi";
-import socketIO from "socket.io-client";
 import { format } from "timeago.js";
-const ENDPOINT = "http://localhost:8000";
-const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
 
 const DashboardMessages = () => {
   const { seller,isLoading } = useSelector((state) => state.seller);
   const [conversations, setConversations] = useState([]);
-  const [arrivalMessage, setArrivalMessage] = useState(null);
   const [currentChat, setCurrentChat] = useState();
   const [messages, setMessages] = useState([]);
   const [userData, setUserData] = useState(null);
   const [newMessage, setNewMessage] = useState("");
-  const [onlineUsers, setOnlineUsers] = useState([]);
   const [activeStatus, setActiveStatus] = useState(false);
   const [images, setImages] = useState();
   const [open, setOpen] = useState(false);
   const scrollRef = useRef(null);
-
-  useEffect(() => {
-    socketId.on("getMessage", (data) => {
-      setArrivalMessage({
-        sender: data.senderId,
-        text: data.text,
-        createdAt: Date.now(),
-      });
-    });
-  }, []);
-
-  useEffect(() => {
-    arrivalMessage &&
-      currentChat?.members.includes(arrivalMessage.sender) &&
-      setMessages((prev) => [...prev, arrivalMessage]);
-  }, [arrivalMessage, currentChat]);
 
   useEffect(() => {
     const getConversation = async () => {
@@ -59,23 +38,6 @@ const DashboardMessages = () => {
     };
     getConversation();
   }, [seller, messages]);
-
-  useEffect(() => {
-    if (seller) {
-      const sellerId = seller?._id;
-      socketId.emit("addUser", sellerId);
-      socketId.on("getUsers", (data) => {
-        setOnlineUsers(data);
-      });
-    }
-  }, [seller]);
-
-  const onlineCheck = (chat) => {
-    const chatMembers = chat.members.find((member) => member !== seller?._id);
-    const online = onlineUsers.find((user) => user.userId === chatMembers);
-
-    return online ? true : false;
-  };
 
   // get messages
   useEffect(() => {
@@ -102,16 +64,6 @@ const DashboardMessages = () => {
       conversationId: currentChat._id,
     };
 
-    const receiverId = currentChat.members.find(
-      (member) => member.id !== seller._id
-    );
-
-    socketId.emit("sendMessage", {
-      senderId: seller._id,
-      receiverId,
-      text: newMessage,
-    });
-
     try {
       if (newMessage !== "") {
         await axios
@@ -130,11 +82,6 @@ const DashboardMessages = () => {
   };
 
   const updateLastMessage = async () => {
-    socketId.emit("updateLastMessage", {
-      lastMessage: newMessage,
-      lastMessageId: seller._id,
-    });
-
     await axios
       .put(`${server}/conversation/update-last-message/${currentChat._id}`, {
         lastMessage: newMessage,
@@ -163,16 +110,6 @@ const DashboardMessages = () => {
   };
 
   const imageSendingHandler = async (e) => {
-    const receiverId = currentChat.members.find(
-      (member) => member !== seller._id
-    );
-
-    socketId.emit("sendMessage", {
-      senderId: seller._id,
-      receiverId,
-      images: e,
-    });
-
     try {
       await axios
         .post(`${server}/message/create-new-message`, {
@@ -224,7 +161,7 @@ const DashboardMessages = () => {
                 me={seller._id}
                 setUserData={setUserData}
                 userData={userData}
-                online={onlineCheck(item)}
+                online={false}
                 setActiveStatus={setActiveStatus}
                 isLoading={isLoading}
               />
