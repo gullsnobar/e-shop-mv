@@ -1,112 +1,98 @@
-import { HiOutlineReceiptRefund, HiOutlineShoppingBag } from 'react-icons/hi';
+import React from "react";
+import { AiOutlineLogin, AiOutlineMessage } from "react-icons/ai";
+import { RiLockPasswordLine } from "react-icons/ri";
+import { HiOutlineReceiptRefund, HiOutlineShoppingBag } from "react-icons/hi";
+import {
+  MdOutlineAdminPanelSettings,
+  MdOutlineTrackChanges,
+} from "react-icons/md";
+import { TbAddressBook } from "react-icons/tb";
 import { RxPerson } from "react-icons/rx";
-import { MdOutlineTrackChanges, MdOutlineLocationOn, MdOutlinePayment } from "react-icons/md";
-import { AiOutlineMessage, AiOutlineLogout } from "react-icons/ai";
-import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { logoutUserAction } from '../../redux/actions/user';
+import { IoCardOutline } from "react-icons/io5";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { server } from "../../server";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
 
-const ProfileSidebar = ({ active, setActive }) => {
+const navItems = [
+  { id: 1, label: "Profile", icon: RxPerson },
+  { id: 2, label: "Orders", icon: HiOutlineShoppingBag },
+  { id: 3, label: "Refunds", icon: HiOutlineReceiptRefund },
+  { id: 4, label: "Inbox", icon: AiOutlineMessage, external: "/inbox" },
+  { id: 5, label: "Track Order", icon: MdOutlineTrackChanges },
+  { id: 6, label: "Change Password", icon: RiLockPasswordLine },
+  { id: 7, label: "Address", icon: TbAddressBook },
+];
+
+const ProfileSidebar = ({ setActive, active }) => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.user);
 
-  const menuItems = [
-    { id: 1, label: "Profile", icon: RxPerson },
-    { id: 2, label: "Orders", icon: HiOutlineShoppingBag },
-    { id: 3, label: "Refunds", icon: HiOutlineReceiptRefund },
-    { id: 4, label: "Inbox", icon: AiOutlineMessage, action: () => navigate("/inbox") },
-    { id: 5, label: "Track Order", icon: MdOutlineTrackChanges },
-    { id: 6, label: "Payment Methods", icon: MdOutlinePayment },
-    { id: 7, label: "Address", icon: MdOutlineLocationOn },
-  ];
-
-  const handleClick = (item) => {
-    if (item.action) {
-      setActive(item.id);
-      item.action();
-    } else {
-      setActive(item.id);
-    }
-  };
-
-  const handleLogout = () => {
-    dispatch(logoutUserAction());
-    toast.success("Logged out successfully", {
-      position: "top-center",
-      autoClose: 1500,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: false,
-      draggable: false,
-    });
-    setTimeout(() => {
-      navigate("/login");
-    }, 1600);
+  const logoutHandler = () => {
+    axios
+      .get(`${server}/user/logout`, { withCredentials: true })
+      .then((res) => {
+        toast.success(res.data.message);
+        window.location.reload(true);
+        navigate("/login");
+      })
+      .catch((error) => {
+        console.log(error.response.data.message);
+      });
   };
 
   return (
-    <div className="w-full">
-      {/* Mobile: horizontal scrollable tabs */}
-      <div className="lg:hidden bg-white rounded-xl shadow-sm p-2 overflow-x-auto">
-        <div className="flex gap-1 min-w-max">
-          {menuItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = active === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => handleClick(item)}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm whitespace-nowrap transition-all ${
-                  isActive
-                    ? "bg-red-50 text-red-500 font-medium"
-                    : "text-gray-500 hover:bg-gray-50"
-                }`}
-              >
-                <Icon size={16} className={isActive ? "text-red-500" : "text-gray-400"} />
-                <span>{item.label}</span>
-              </button>
-            );
-          })}
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm whitespace-nowrap text-gray-500 hover:bg-red-50 hover:text-red-500 transition-all"
-          >
-            <AiOutlineLogout size={16} />
-            <span>Logout</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Desktop: vertical sidebar */}
-      <div className="hidden lg:block w-full bg-white rounded-xl p-3">
-        {menuItems.map((item) => {
+    <div className="w-full bg-white rounded-xl shadow-sm p-3">
+      <div className="space-y-1">
+        {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = active === item.id;
           return (
             <div
               key={item.id}
-              onClick={() => handleClick(item)}
-              className={`flex items-center cursor-pointer w-full mb-1 px-3 py-3 rounded-lg transition-all ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all duration-200 ${
                 isActive
-                  ? "bg-red-50 text-red-500"
+                  ? "bg-[#3321c8]/10 text-[#3321c8] font-semibold"
                   : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
               }`}
+              onClick={() => {
+                if (item.external) navigate(item.external);
+                else setActive(item.id);
+              }}
             >
-              <Icon size={20} className={`flex-shrink-0 ${isActive ? "text-red-500" : "text-gray-400"}`} />
-              <span className={`pl-3 text-[14px] font-medium ${isActive ? "text-red-500" : "text-gray-600"}`}>
-                {item.label}
-              </span>
+              <Icon
+                size={20}
+                className={`flex-shrink-0 ${isActive ? "text-[#3321c8]" : ""}`}
+              />
+              <span className="text-[14px]">{item.label}</span>
             </div>
           );
         })}
 
+        {/* Payment Methods - navigates to checkout/payment page */}
+        <Link to="/checkout">
+          <div className="flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all duration-200 text-gray-500 hover:bg-gray-50 hover:text-gray-700">
+            <IoCardOutline size={20} className="flex-shrink-0" />
+            <span className="text-[14px]">Payment Methods</span>
+          </div>
+        </Link>
+
+        {user && user?.role === "Admin" && (
+          <Link to="/admin/dashboard">
+            <div className="flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all duration-200 text-gray-500 hover:bg-gray-50 hover:text-gray-700">
+              <MdOutlineAdminPanelSettings size={20} className="flex-shrink-0" />
+              <span className="text-[14px]">Admin Dashboard</span>
+            </div>
+          </Link>
+        )}
+
         <div
-          className="flex items-center cursor-pointer w-full mb-1 px-3 py-3 rounded-lg hover:bg-red-50 transition-all"
-          onClick={handleLogout}
+          className="flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all duration-200 text-gray-500 hover:bg-gray-50 hover:text-gray-700"
+          onClick={logoutHandler}
         >
-          <AiOutlineLogout size={20} className="text-gray-400 flex-shrink-0" />
-          <span className="pl-3 text-[14px] font-medium text-gray-600 hover:text-red-500">Logout</span>
+          <AiOutlineLogin size={20} className="flex-shrink-0" />
+          <span className="text-[14px]">Log out</span>
         </div>
       </div>
     </div>
