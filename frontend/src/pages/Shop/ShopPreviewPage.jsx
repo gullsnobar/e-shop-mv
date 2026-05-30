@@ -1,4 +1,3 @@
-
 import styles from '../../styles/styles'
 import ShopInfo from "../../components/Shop/ShopInfo";
 import ShopProfileData from "../../components/Shop/ShopProfileData";
@@ -11,7 +10,6 @@ const ShopPreviewPage = () => {
   const { seller, isSeller } = useSelector((state) => state.seller);
   const [isOwner, setIsOwner] = useState(false);
 
-  // Check if the logged-in seller owns this shop
   useEffect(() => {
     if (isSeller && seller && seller._id === shopId) {
       setIsOwner(true);
@@ -21,17 +19,24 @@ const ShopPreviewPage = () => {
   }, [shopId, seller, isSeller]);
 
   return (
-    <div className={`${styles.section} bg-[#f5f5f5]`}>
-         <div className="w-full 800px:flex py-10 justify-between">
-          <div className="800px:w-[25%] bg-[#fff] rounded-[4px] shadow-sm 800px:overflow-y-scroll 800px:h-[90vh] 800px:sticky top-10 left-0 z-10">
+    <div className={`${styles.section} bg-[#f5f5f5] min-h-screen`}>
+      <div className="w-full flex flex-col 800px:flex-row gap-5 py-10">
+
+        {/* LEFT SIDEBAR */}
+        <div className="w-full 800px:w-[25%] 800px:min-w-[260px] 800px:max-w-[300px]">
+          <div className="bg-white rounded-[4px] shadow-sm 800px:sticky top-10 800px:overflow-y-auto 800px:max-h-[90vh]">
             <ShopInfo isOwner={isOwner} />
           </div>
-          <div className="800px:w-[72%] mt-5 800px:mt-['unset'] rounded-[4px]">
-            <ShopProfileData isOwner={isOwner} />
-          </div>
-         </div>
-    </div>
-  )
-}
+        </div>
 
-export default ShopPreviewPage
+        {/* RIGHT MAIN CONTENT */}
+        <div className="w-full 800px:flex-1">
+          <ShopProfileData isOwner={isOwner} />
+        </div>
+
+      </div>
+    </div>
+  );
+};
+
+export default ShopPreviewPage;
