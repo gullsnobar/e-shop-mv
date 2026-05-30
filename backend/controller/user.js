@@ -12,6 +12,9 @@ const { isAuthenticated, isAdmin } = require("../middleware/auth");
 // create user
 router.post("/create-user", async (req, res, next) => {
   try {
+    if (!req.body || typeof req.body !== "object") {
+      return next(new ErrorHandler("Request body is required", 400));
+    }
     const { name, email, password, avatar } = req.body;
     const userEmail = await User.findOne({ email });
 

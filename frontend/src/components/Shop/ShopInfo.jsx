@@ -7,6 +7,7 @@ import Loader from "../Layout/Loader";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllProductsShop } from "../../redux/actions/product";
 import { productData } from "../../static/data";
+import { FaMapPin, FaPhone, FaBox, FaStar, FaCalendar } from "react-icons/fa";
 
 const ShopInfo = ({ isOwner }) => {
   const [data, setData] = useState({});
@@ -50,13 +51,6 @@ const ShopInfo = ({ isOwner }) => {
         setIsLoading(false);
       });
   }, [id]);
-
-  const logoutHandler = async () => {
-    axios.get(`${server}/shop/logout`, {
-      withCredentials: true,
-    });
-    window.location.reload();
-  };
 
   const activeProducts =
     products && products.length > 0 ? products : staticProducts;
@@ -122,7 +116,7 @@ const ShopInfo = ({ isOwner }) => {
           <div className="mt-5 space-y-4">
             <div className="flex items-start gap-3">
               <div className="w-[36px] h-[36px] rounded-lg bg-gray-50 flex items-center justify-center flex-shrink-0">
-                <span className="text-gray-400 text-sm">📍</span>
+                <FaMapPin size={18} className="text-gray-600" />
               </div>
               <div>
                 <h5 className="text-[12px] text-gray-400 font-medium uppercase tracking-wider">Address</h5>
@@ -132,7 +126,7 @@ const ShopInfo = ({ isOwner }) => {
 
             <div className="flex items-start gap-3">
               <div className="w-[36px] h-[36px] rounded-lg bg-gray-50 flex items-center justify-center flex-shrink-0">
-                <span className="text-gray-400 text-sm">📞</span>
+                <FaPhone size={18} className="text-gray-600" />
               </div>
               <div>
                 <h5 className="text-[12px] text-gray-400 font-medium uppercase tracking-wider">Phone Number</h5>
@@ -142,7 +136,7 @@ const ShopInfo = ({ isOwner }) => {
 
             <div className="flex items-start gap-3">
               <div className="w-[36px] h-[36px] rounded-lg bg-gray-50 flex items-center justify-center flex-shrink-0">
-                <span className="text-gray-400 text-sm">📦</span>
+                <FaBox size={18} className="text-gray-600" />
               </div>
               <div>
                 <h5 className="text-[12px] text-gray-400 font-medium uppercase tracking-wider">Total Products</h5>
@@ -152,7 +146,7 @@ const ShopInfo = ({ isOwner }) => {
 
             <div className="flex items-start gap-3">
               <div className="w-[36px] h-[36px] rounded-lg bg-gray-50 flex items-center justify-center flex-shrink-0">
-                <span className="text-gray-400 text-sm">⭐</span>
+                <FaStar size={18} className="text-gray-600" />
               </div>
               <div>
                 <h5 className="text-[12px] text-gray-400 font-medium uppercase tracking-wider">Shop Ratings</h5>
@@ -162,7 +156,7 @@ const ShopInfo = ({ isOwner }) => {
 
             <div className="flex items-start gap-3">
               <div className="w-[36px] h-[36px] rounded-lg bg-gray-50 flex items-center justify-center flex-shrink-0">
-                <span className="text-gray-400 text-sm">📅</span>
+                <FaCalendar size={18} className="text-gray-600" />
               </div>
               <div>
                 <h5 className="text-[12px] text-gray-400 font-medium uppercase tracking-wider">Joined On</h5>
@@ -178,12 +172,11 @@ const ShopInfo = ({ isOwner }) => {
                   <span className="text-white text-[14px] font-medium">Edit Shop</span>
                 </div>
               </Link>
-              <div
-                className={`${styles.button} !w-full !h-[44px] !rounded-xl !bg-red-500 hover:!bg-red-600 transition-colors cursor-pointer`}
-                onClick={logoutHandler}
-              >
-                <span className="text-white text-[14px] font-medium">Log Out</span>
-              </div>
+              <Link to="/dashboard">
+                <div className={`${styles.button} !w-full !h-[44px] !rounded-xl hover:bg-gray-800 transition-colors`}>
+                  <span className="text-white text-[14px] font-medium">Go Dashboard</span>
+                </div>
+              </Link>
             </div>
           )}
         </div>

@@ -3,6 +3,10 @@ import {
   AiOutlineArrowRight,
   AiOutlineCamera,
   AiOutlineDelete,
+  AiOutlineUser,
+  AiOutlineMail,
+  AiOutlinePhone,
+  AiOutlineLock,
 } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { server } from "../../server";
@@ -24,7 +28,7 @@ import axios from "axios";
 import { getAllOrdersOfUser } from "../../redux/actions/order";
 
 const ProfileContent = ({ active }) => {
-  const { user, error, successMessage } = useSelector((state) => state.user);
+  const { user, loading, error, successMessage } = useSelector((state) => state.user);
   const [name, setName] = useState(user && user.name);
   const [email, setEmail] = useState(user && user.email);
   const [phoneNumber, setPhoneNumber] = useState(user && user.phoneNumber);
@@ -67,7 +71,7 @@ const ProfileContent = ({ active }) => {
             toast.success("avatar updated successfully!");
           })
           .catch((error) => {
-            toast.error(error);
+            toast.error(error?.response?.data?.message || "Failed to update avatar");
           });
       }
     };
@@ -80,15 +84,16 @@ const ProfileContent = ({ active }) => {
       {/* profile */}
       {active === 1 && (
         <div className="bg-white rounded-2xl shadow-lg p-6 md:p-10 max-w-[800px] mx-auto">
-          {/* Avatar with hover overlay */}
+          {/* Avatar */}
           <div className="flex justify-center mb-8">
             <div className="relative group">
               <img
                 src={avatar || user?.avatar?.url || "https://cdn-icons-png.flaticon.com/512/149/149071.png"}
-                className="w-[160px] h-[160px] rounded-full object-cover ring-4 ring-[#3321c8]/15 border-2 border-[#3321c8] transition-transform duration-300 group-hover:scale-[1.02]"
-                alt="Profile"
+                onError={(e) => { e.target.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png"; }}
+                className="w-[150px] h-[150px] rounded-full object-cover border-[3px] border-[#3321c8] shadow-[0_0_20px_rgba(51,33,200,0.15)] transition-all duration-300 group-hover:scale-[1.03] group-hover:shadow-[0_0_30px_rgba(51,33,200,0.25)]"
+                alt=""
               />
-              <div className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+              <div className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center cursor-pointer">
                 <input
                   type="file"
                   id="image"
@@ -98,10 +103,11 @@ const ProfileContent = ({ active }) => {
                 />
                 <label
                   htmlFor="image"
-                  className="absolute inset-0 rounded-full flex flex-col items-center justify-center cursor-pointer text-white"
+                  className="absolute inset-0 rounded-full flex items-center justify-center cursor-pointer"
                 >
-                  <AiOutlineCamera size={28} />
-                  <span className="text-[11px] font-medium mt-1">Change Photo</span>
+                  <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30">
+                    <AiOutlineCamera size={22} className="text-white" />
+                  </div>
                 </label>
               </div>
             </div>
@@ -113,62 +119,90 @@ const ProfileContent = ({ active }) => {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Full Name */}
               <div>
                 <label className="block text-[13px] font-medium text-gray-500 mb-1.5">
                   Full Name
                 </label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                  className="w-full h-[48px] px-4 rounded-lg border border-gray-200 text-gray-800 text-[14px] placeholder-gray-400 focus:outline-none focus:border-[#3321c8] focus:ring-[3px] focus:ring-[#3321c8]/10 transition-all duration-200"
-                />
+                <div className="relative">
+                  <AiOutlineUser size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                    className="w-full h-[48px] pl-10 pr-4 rounded-lg border border-gray-200 text-gray-800 text-[14px] placeholder-gray-400 focus:outline-none focus:border-[#3321c8] focus:ring-[3px] focus:ring-[#3321c8]/10 transition-all duration-200"
+                  />
+                </div>
               </div>
+
+              {/* Email */}
               <div>
                 <label className="block text-[13px] font-medium text-gray-500 mb-1.5">
                   Email Address
                 </label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="w-full h-[48px] px-4 rounded-lg border border-gray-200 text-gray-800 text-[14px] placeholder-gray-400 focus:outline-none focus:border-[#3321c8] focus:ring-[3px] focus:ring-[#3321c8]/10 transition-all duration-200"
-                />
+                <div className="relative">
+                  <AiOutlineMail size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="w-full h-[48px] pl-10 pr-4 rounded-lg border border-gray-200 text-gray-800 text-[14px] placeholder-gray-400 focus:outline-none focus:border-[#3321c8] focus:ring-[3px] focus:ring-[#3321c8]/10 transition-all duration-200"
+                  />
+                </div>
               </div>
+
+              {/* Phone */}
               <div>
                 <label className="block text-[13px] font-medium text-gray-500 mb-1.5">
                   Phone Number
                 </label>
-                <input
-                  type="number"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  required
-                  className="w-full h-[48px] px-4 rounded-lg border border-gray-200 text-gray-800 text-[14px] placeholder-gray-400 focus:outline-none focus:border-[#3321c8] focus:ring-[3px] focus:ring-[#3321c8]/10 transition-all duration-200"
-                />
+                <div className="relative">
+                  <AiOutlinePhone size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                  <input
+                    type="number"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    required
+                    className="w-full h-[48px] pl-10 pr-4 rounded-lg border border-gray-200 text-gray-800 text-[14px] placeholder-gray-400 focus:outline-none focus:border-[#3321c8] focus:ring-[3px] focus:ring-[#3321c8]/10 transition-all duration-200"
+                  />
+                </div>
               </div>
+
+              {/* Password */}
               <div>
                 <label className="block text-[13px] font-medium text-gray-500 mb-1.5">
                   Password
                 </label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  placeholder="Enter password to confirm changes"
-                  className="w-full h-[48px] px-4 rounded-lg border border-gray-200 text-gray-800 text-[14px] placeholder-gray-400 focus:outline-none focus:border-[#3321c8] focus:ring-[3px] focus:ring-[#3321c8]/10 transition-all duration-200"
-                />
+                <div className="relative">
+                  <AiOutlineLock size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    placeholder="Enter password to confirm changes"
+                    className="w-full h-[48px] pl-10 pr-4 rounded-lg border border-gray-200 text-gray-800 text-[14px] placeholder-gray-400 focus:outline-none focus:border-[#3321c8] focus:ring-[3px] focus:ring-[#3321c8]/10 transition-all duration-200"
+                  />
+                </div>
               </div>
             </div>
+
             <div className="pt-2">
               <button
                 type="submit"
-                className="w-full md:w-auto px-10 h-[48px] bg-gradient-to-r from-[#3321c8] to-[#3957db] text-white font-semibold text-[14px] rounded-lg hover:from-[#2a1ba8] hover:to-[#2f4ac0] hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
+                disabled={loading}
+                className="w-full md:w-auto px-10 h-[48px] bg-gradient-to-r from-[#3321c8] to-[#3957db] text-white font-semibold text-[14px] rounded-lg hover:from-[#2a1ba8] hover:to-[#2f4ac0] hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 flex items-center justify-center gap-2"
               >
-                Update Profile
+                {user?.loading ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin inline-block" />
+                    Updating...
+                  </>
+                ) : (
+                  "Update Profile"
+                )}
               </button>
             </div>
           </form>

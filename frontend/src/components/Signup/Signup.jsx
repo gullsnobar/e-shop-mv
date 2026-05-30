@@ -16,8 +16,14 @@ const SignUp = () => {
   const [name,setName] = useState("");
   const [avatar,setAvatar] = useState(null);
 
-  const handleFileInputChange = (e)=>{
-    setAvatar(e.target.files[0]);
+  const handleFileInputChange = (e) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (reader.readyState === 2) {
+        setAvatar(reader.result);
+      }
+    };
+    reader.readAsDataURL(e.target.files[0]);
   };
 
   const [loading, setLoading] = useState(false);
@@ -33,17 +39,12 @@ const SignUp = () => {
     setLoading(true);
 
     try {
-      const config = {
-        headers: { "Content-Type": "multipart/form-data" },
-      };
-
-      const newForm = new FormData();
-      newForm.append("name", name);
-      newForm.append("file", avatar);
-      newForm.append("email", email);
-      newForm.append("password", password);
-
-      const res = await axios.post(`${server}/user/create-user`, newForm, config);
+      const res = await axios.post(`${server}/user/create-user`, {
+        name,
+        email,
+        password,
+        avatar,
+      });
 
       if (res.data.success) {
         if (res.data.token) {
@@ -145,7 +146,7 @@ const SignUp = () => {
               <div className="h-12 w-12 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
                 {avatar ? (
                   <img
-                    src={URL.createObjectURL(avatar)}
+                    src={avatar}
                     alt="avatar"
                     className="h-full w-full object-cover"
                   />
