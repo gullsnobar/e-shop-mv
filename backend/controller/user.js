@@ -183,20 +183,18 @@ router.put(
   isAuthenticated,
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const { email, password, phoneNumber, name } = req.body;
+      const { name, email, phoneNumber, password } = req.body;
 
-      const user = await User.findOne({ email }).select("+password");
+      const user = await User.findById(req.user.id).select("+password");
 
       if (!user) {
-        return next(new ErrorHandler("User not found", 400));
+        return next(new ErrorHandler("User not found", 404));
       }
 
       const isPasswordValid = await user.comparePassword(password);
 
       if (!isPasswordValid) {
-        return next(
-          new ErrorHandler("Please provide the correct information", 400)
-        );
+        return next(new ErrorHandler("Incorrect password", 400));
       }
 
       user.name = name;
@@ -205,7 +203,7 @@ router.put(
 
       await user.save();
 
-      res.status(201).json({
+      res.status(200).json({
         success: true,
         user,
       });
@@ -255,38 +253,55 @@ router.put(
   "/update-user-addresses",
   isAuthenticated,
   catchAsyncErrors(async (req, res, next) => {
-    try {
-      const user = await User.findById(req.user.id);
+    const { country, city, address1, address2, zipCode, addressType, _id } =
+      req.body || {};
 
-      const sameTypeAddress = user.addresses.find(
-        (address) => address.addressType === req.body.addressType
-      );
-      if (sameTypeAddress) {
-        return next(
-          new ErrorHandler(`${req.body.addressType} address already exists`)
-        );
-      }
-
-      const existsAddress = user.addresses.find(
-        (address) => address._id === req.body._id
-      );
-
-      if (existsAddress) {
-        Object.assign(existsAddress, req.body);
-      } else {
-        // add the new address to the array
-        user.addresses.push(req.body);
-      }
-
-      await user.save();
-
-      res.status(200).json({
-        success: true,
-        user,
-      });
-    } catch (error) {
-      return next(new ErrorHandler(error.message, 500));
+    if (!country || !city || !address1 || !zipCode || !addressType) {
+      return next(new ErrorHandler("Missing required address fields", 400));
     }
+
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return next(new ErrorHandler("User not found", 404));
+    }
+
+    const sameTypeAddress = user.addresses.find(
+      (address) => address.addressType === addressType
+    );
+
+    if (!_id && sameTypeAddress) {
+      return next(new ErrorHandler(`${addressType} address already exists`, 400));
+    }
+
+    const existingIndex = user.addresses.findIndex(
+      (address) => address._id && address._id.toString() === _id
+    );
+
+    const payload = {
+      country,
+      city,
+      address1,
+      address2,
+      zipCode,
+      addressType,
+    };
+
+    if (existingIndex >= 0) {
+      user.addresses[existingIndex] = {
+        ...user.addresses[existingIndex]._doc,
+        ...payload,
+      };
+    } else {
+      user.addresses.push(payload);
+    }
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      user,
+    });
   })
 );
 
