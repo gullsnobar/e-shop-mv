@@ -1,48 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
-import { server } from "../../server";
 import { toast } from "react-toastify";
-import axios from "axios";
-import { useDispatch } from "react-redux";
-import { loadUser } from "../../redux/actions/user";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "../../redux/actions/user";
 
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { loading, isAuthenticated, error } = useSelector((state) => state.user);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
-  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-
-    try {
-      const { data } = await axios.post(
-        `${server}/user/login-user`,
-        { email, password },
-        { withCredentials: true }
-      );
-
-      if (data.success) {
-        if (data.token) {
-          localStorage.setItem("token", data.token);
-          axios.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
-        }
-        toast.success(data.message || "Login Success!");
-        dispatch(loadUser());
-        navigate("/");
-      } else {
-        toast.error(data.message || "Login failed");
-      }
-    } catch (err) {
-      toast.error(err?.response?.data?.message || err.message || "Login failed. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+    dispatch(login(email, password));
   };
 
   return (

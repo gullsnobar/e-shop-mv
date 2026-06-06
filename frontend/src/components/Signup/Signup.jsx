@@ -1,20 +1,36 @@
-import React,{useState} from "react";
-import {AiOutlineEye,AiOutlineEyeInvisible} from "react-icons/ai";
-import {RxAvatar} from "react-icons/rx";
-import {Link,useNavigate} from "react-router-dom";
-import axios from "axios";
-import {server} from "../../server";
-import {toast} from "react-toastify";
+import React, { useState, useEffect } from "react";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { RxAvatar } from "react-icons/rx";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { signup, clearMessages } from "../../redux/actions/user";
 
 const SignUp = () => {
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { loading, error, successMessage } = useSelector((state) => state.user);
 
-  const [email,setEmail] = useState("");
-  const [password,setPassword] = useState("");
-  const [visible,setVisible] = useState(false);
-  const [name,setName] = useState("");
-  const [avatar,setAvatar] = useState(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [visible, setVisible] = useState(false);
+  const [name, setName] = useState("");
+  const [avatar, setAvatar] = useState(null);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+    if (successMessage) {
+      toast.success(successMessage);
+      setName("");
+      setEmail("");
+      setPassword("");
+      setAvatar(null);
+      dispatch(clearMessages());
+    }
+  }, [error, successMessage, dispatch]);
 
   const handleFileInputChange = (e) => {
     const reader = new FileReader();
@@ -26,8 +42,6 @@ const SignUp = () => {
     reader.readAsDataURL(e.target.files[0]);
   };
 
-  const [loading, setLoading] = useState(false);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -36,37 +50,7 @@ const SignUp = () => {
       return;
     }
 
-    setLoading(true);
-
-    try {
-      const res = await axios.post(`${server}/user/create-user`, {
-        name,
-        email,
-        password,
-        avatar,
-      });
-
-      if (res.data.success) {
-        if (res.data.token) {
-          localStorage.setItem("token", res.data.token);
-          axios.defaults.headers.common["Authorization"] = `Bearer ${res.data.token}`;
-        }
-        toast.success(res.data.message || "Account created successfully!");
-
-        setName("");
-        setEmail("");
-        setPassword("");
-        setAvatar(null);
-
-        navigate("/");
-      } else {
-        toast.error(res.data.message || "Signup failed");
-      }
-    } catch (err) {
-      toast.error(err?.response?.data?.message || err.message || "Signup failed. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+    dispatch(signup(name, email, password, avatar));
   };
 
   return (

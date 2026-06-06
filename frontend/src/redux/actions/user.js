@@ -4,6 +4,15 @@ import {
   loadUserRequest,
   loadUserSuccess,
   loadUserFail,
+  signupRequest,
+  signupSuccess,
+  signupFail,
+  activationRequest,
+  activationSuccess,
+  activationFail,
+  loginRequest,
+  loginSuccess,
+  loginFail,
   updateUserInfoRequest,
   updateUserInfoSuccess,
   updateUserInfoFailed,
@@ -33,6 +42,55 @@ const setAuthToken = () => {
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   } else {
     delete axios.defaults.headers.common["Authorization"];
+  }
+};
+
+// signup user
+export const signup = (name, email, password, avatar) => async (dispatch) => {
+  try {
+    dispatch(signupRequest());
+    const { data } = await axios.post(`${server}/user/create-user`, {
+      name,
+      email,
+      password,
+      avatar,
+    });
+    dispatch(signupSuccess(data.message));
+  } catch (error) {
+    dispatch(signupFail(error?.response?.data?.message || "Signup failed"));
+  }
+};
+
+// activate user
+export const activation = (activation_token) => async (dispatch) => {
+  try {
+    dispatch(activationRequest());
+    const { data } = await axios.post(`${server}/user/activation`, {
+      activation_token,
+    });
+    localStorage.setItem("token", data.token);
+    setAuthToken();
+    dispatch(activationSuccess(data.user));
+  } catch (error) {
+    dispatch(activationFail(error?.response?.data?.message || "Activation failed"));
+    localStorage.removeItem("token");
+  }
+};
+
+// login user
+export const login = (email, password) => async (dispatch) => {
+  try {
+    dispatch(loginRequest());
+    const { data } = await axios.post(`${server}/user/login-user`, {
+      email,
+      password,
+    });
+    localStorage.setItem("token", data.token);
+    setAuthToken();
+    dispatch(loginSuccess(data.user));
+  } catch (error) {
+    dispatch(loginFail(error?.response?.data?.message || "Login failed"));
+    localStorage.removeItem("token");
   }
 };
 

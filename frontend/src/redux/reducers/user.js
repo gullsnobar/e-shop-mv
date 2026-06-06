@@ -12,6 +12,46 @@ const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
+    signupRequest: (state) => {
+      state.loading = true;
+    },
+    signupSuccess: (state, action) => {
+      state.loading = false;
+      state.successMessage = action.payload;
+      state.error = null;
+    },
+    signupFail: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    activationRequest: (state) => {
+      state.loading = true;
+    },
+    activationSuccess: (state, action) => {
+      state.isAuthenticated = true;
+      state.loading = false;
+      state.user = action.payload;
+      state.error = null;
+    },
+    activationFail: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+      state.isAuthenticated = false;
+    },
+    loginRequest: (state) => {
+      state.loading = true;
+    },
+    loginSuccess: (state, action) => {
+      state.isAuthenticated = true;
+      state.loading = false;
+      state.user = action.payload;
+      state.error = null;
+    },
+    loginFail: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+      state.isAuthenticated = false;
+    },
     loadUserRequest: (state) => {
       state.loading = true;
     },
@@ -93,6 +133,15 @@ const userSlice = createSlice({
 });
 
 export const {
+  signupRequest,
+  signupSuccess,
+  signupFail,
+  activationRequest,
+  activationSuccess,
+  activationFail,
+  loginRequest,
+  loginSuccess,
+  loginFail,
   loadUserRequest,
   loadUserSuccess,
   loadUserFail,

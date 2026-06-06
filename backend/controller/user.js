@@ -16,28 +16,44 @@ router.post("/create-user", async (req, res, next) => {
       return next(new ErrorHandler("Request body is required", 400));
     }
     const { name, email, password, avatar } = req.body;
-    const userEmail = await User.findOne({ email });
+    
+    if (!avatar) {
+      return next(new ErrorHandler("Please select a profile image", 400));
+    }
+
+    const userEmail = await User.findOne({ email: email.toLowerCase() });
 
     if (userEmail) {
       return next(new ErrorHandler("User already exists", 400));
     }
 
-    const myCloud = await cloudinary.v2.uploader.upload(avatar, {
-      folder: "avatars",
-    });
+    let avatarData = {
+      public_id: null,
+      url: null,
+    };
 
-    const user = {
-      name: name,
-      email: email,
-      password: password,
-      avatar: {
+    // Upload avatar to Cloudinary
+    try {
+      const myCloud = await cloudinary.v2.uploader.upload(avatar, {
+        folder: "avatars",
+      });
+
+      avatarData = {
         public_id: myCloud.public_id,
         url: myCloud.secure_url,
-      },
+      };
+    } catch (error) {
+      return next(new ErrorHandler("Failed to upload avatar to Cloudinary", 500));
+    }
+
+    const user = {
+      name,
+      email: email.toLowerCase(),
+      password,
+      avatar: avatarData,
     };
 
     const activationToken = createActivationToken(user);
-
     const activationUrl = `https://eshop-tutorial-pyri.vercel.app/activation/${activationToken}`;
 
     try {
@@ -72,6 +88,10 @@ router.post(
     try {
       const { activation_token } = req.body;
 
+      if (!activation_token) {
+        return next(new ErrorHandler("Activation token is required", 400));
+      }
+
       const newUser = jwt.verify(
         activation_token,
         process.env.ACTIVATION_SECRET
@@ -80,18 +100,20 @@ router.post(
       if (!newUser) {
         return next(new ErrorHandler("Invalid token", 400));
       }
+
       const { name, email, password, avatar } = newUser;
 
-      let user = await User.findOne({ email });
+      let user = await User.findOne({ email: email.toLowerCase() });
 
       if (user) {
         return next(new ErrorHandler("User already exists", 400));
       }
+
       user = await User.create({
         name,
-        email,
-        avatar,
+        email: email.toLowerCase(),
         password,
+        avatar: avatar || { public_id: null, url: null },
       });
 
       sendToken(user, 201, res);
@@ -112,7 +134,7 @@ router.post(
         return next(new ErrorHandler("Please provide the all fields!", 400));
       }
 
-      const user = await User.findOne({ email }).select("+password");
+      const user = await User.findOne({ email: email.toLowerCase() }).select("+password");
 
       if (!user) {
         return next(new ErrorHandler("User doesn't exists!", 400));

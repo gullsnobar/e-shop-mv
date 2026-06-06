@@ -1,34 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import axios from "axios";
-
-const server = "http://localhost:5000/api/v1"; // adjust to your backend
+import { useParams, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { activation } from "../redux/actions/user";
 
 const ActivationPage = () => {
   const { activation_token } = useParams();
-  const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { loading, isAuthenticated, error } = useSelector((state) => state.user);
 
   useEffect(() => {
     if (activation_token) {
-      const activateEmail = async () => {
-        try {
-          const res = await axios.post(`${server}/activation`, {
-            activation_token,
-          });
-
-          console.log(res.data);
-          setLoading(false);
-        } catch (err) {
-          console.log(err.response?.data?.message);
-          setError(true);
-          setLoading(false);
-        }
-      };
-
-      activateEmail();
+      dispatch(activation(activation_token));
     }
-  }, [activation_token]);
+  }, [activation_token, dispatch]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
 
   return (
     <div
