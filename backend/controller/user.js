@@ -250,9 +250,12 @@ router.put(
     try {
       let existsUser = await User.findById(req.user.id);
       if (req.body.avatar !== "") {
-        const imageId = existsUser.avatar.public_id;
+        const imageId = existsUser.avatar?.public_id;
 
-        await cloudinary.v2.uploader.destroy(imageId);
+        // Only destroy the old image if one exists
+        if (imageId) {
+          await cloudinary.v2.uploader.destroy(imageId);
+        }
 
         const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
           folder: "avatars",
