@@ -9,7 +9,7 @@ import axios from "axios";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { getAllProducts } from "./redux/actions/products";
-import { loadUser } from "./redux/actions/user";
+import { loadUser, loadSeller } from "./redux/actions/user";
 import ProtectedRoute from "./routes/ProtectedRoute.jsx"
 import SellerProtectedRoute from "./routes/SellerProtectedRoute.jsx"
 import { useSelector } from "react-redux";
@@ -40,6 +40,14 @@ const App = () => {
     if (token) {
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       dispatch(loadUser());
+    }
+  }, [dispatch]);
+
+  // Load seller auth state on mount (separate token from user)
+  useEffect(() => {
+    const sellerToken = localStorage.getItem("seller_token");
+    if (sellerToken) {
+      dispatch(loadSeller());
     }
   }, [dispatch]);
 

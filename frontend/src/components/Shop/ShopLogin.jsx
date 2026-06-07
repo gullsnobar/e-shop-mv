@@ -18,9 +18,13 @@ const ShopLogin = () => {
     setLoading(true);
 
     axios
-      .post(`${server}/shop/login-shop`, { email, password })
+      .post(`${server}/shop/login-shop`, { email, password }, { withCredentials: true })
       .then((res) => {
         toast.success("Login successful!");
+        // Store seller token in localStorage for session persistence
+        if (res.data.token) {
+          localStorage.setItem("seller_token", res.data.token);
+        }
         setLoading(false);
         navigate("/dashboard");
         window.location.reload();

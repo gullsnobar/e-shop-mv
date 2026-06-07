@@ -54,7 +54,7 @@ router.post("/create-user", async (req, res, next) => {
     };
 
     const activationToken = createActivationToken(user);
-    const activationUrl = `https://eshop-tutorial-pyri.vercel.app/activation/${activationToken}`;
+    const activationUrl = `${process.env.FRONTEND_URL || "http://localhost:5173"}/activation/${activationToken}`;
 
     try {
       await sendMail({
@@ -76,8 +76,15 @@ router.post("/create-user", async (req, res, next) => {
 
 // create activation token
 const createActivationToken = (user) => {
-  return jwt.sign(user, process.env.ACTIVATION_SECRET, {
-    expiresIn: "5m",
+  // Only include compact data in JWT payload — no large base64 avatar strings
+  const payload = {
+    name: user.name,
+    email: user.email,
+    password: user.password,
+    avatar: user.avatar, // This is already { public_id, url } from Cloudinary
+  };
+  return jwt.sign(payload, process.env.ACTIVATION_SECRET, {
+    expiresIn: "30m",
   });
 };
 

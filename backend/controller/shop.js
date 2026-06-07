@@ -66,8 +66,18 @@ router.post("/create-shop", catchAsyncErrors(async (req, res, next) => {
 
 // create activation token
 const createActivationToken = (seller) => {
-  return jwt.sign(seller, process.env.ACTIVATION_SECRET, {
-    expiresIn: "5m",
+  // Only include compact data in JWT payload — avatar is already { public_id, url } from Cloudinary
+  const payload = {
+    name: seller.name,
+    email: seller.email,
+    password: seller.password,
+    avatar: seller.avatar,
+    address: seller.address,
+    phoneNumber: seller.phoneNumber,
+    zipCode: seller.zipCode,
+  };
+  return jwt.sign(payload, process.env.ACTIVATION_SECRET, {
+    expiresIn: "30m",
   });
 };
 

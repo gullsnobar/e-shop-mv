@@ -21,7 +21,8 @@ import {
   updatUserAddress,
   updateUserInformation,
 } from "../../redux/actions/user";
-import { Country, State } from "country-state-city";
+import { clearErrors, clearMessages } from "../../redux/reducers/user";
+import { Country, State, City } from "country-state-city";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -47,11 +48,11 @@ const ProfileContent = ({ active }) => {
   useEffect(() => {
     if (error) {
       toast.error(error);
-      dispatch({ type: "clearErrors" });
+      dispatch(clearErrors());
     }
     if (successMessage) {
       toast.success(successMessage);
-      dispatch({ type: "clearMessages" });
+      dispatch(clearMessages());
     }
   }, [error, successMessage]);
 
@@ -842,6 +843,7 @@ const ChangePassword = () => {
 const Address = () => {
   const [open, setOpen] = useState(false);
   const [country, setCountry] = useState("");
+  const [selectedState, setSelectedState] = useState("");
   const [city, setCity] = useState("");
   const [zipCode, setZipCode] = useState("");
   const [address1, setAddress1] = useState("");
@@ -850,14 +852,19 @@ const Address = () => {
   const { user, loading, error, successMessage } = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
+  // Get states for selected country
+  const statesOfCountry = country ? State.getStatesOfCountry(country) : [];
+  // Get cities for selected state
+  const citiesOfState = (country && selectedState) ? City.getCitiesOfState(country, selectedState) : [];
+
   useEffect(() => {
     if (error) {
       toast.error(error);
-      dispatch({ type: "clearErrors" });
+      dispatch(clearErrors());
     }
     if (successMessage) {
       toast.success(successMessage);
-      dispatch({ type: "clearMessages" });
+      dispatch(clearMessages());
     }
   }, [error, successMessage, dispatch]);
 
@@ -865,12 +872,17 @@ const Address = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (addressType === "" || country === "" || city === "") {
+    // Determine the city value: use typed city, or if states exist but no cities, use state name
+    const cityValue = city || "";
+    // Get the readable country name
+    const countryName = Country.getCountryByCode(country)?.name || country;
+    if (addressType === "" || country === "" || cityValue === "") {
       toast.error("Please fill all the fields!");
     } else {
-      dispatch(updatUserAddress(country, city, address1, address2, zipCode, addressType));
+      dispatch(updatUserAddress(countryName, cityValue, address1, address2, zipCode, addressType));
       setOpen(false);
       setCountry("");
+      setSelectedState("");
       setCity("");
       setAddress1("");
       setAddress2("");
@@ -904,7 +916,7 @@ const Address = () => {
                   <label className="block text-[13px] font-medium text-gray-500 mb-1.5">Country</label>
                   <select
                     value={country}
-                    onChange={(e) => setCountry(e.target.value)}
+                    onChange={(e) => { setCountry(e.target.value); setSelectedState(""); setCity(""); }}
                     className="w-full h-[48px] px-3 rounded-lg border border-gray-200 text-gray-800 text-[14px] focus:outline-none focus:border-[#3321c8] focus:ring-[3px] focus:ring-[#3321c8]/10 transition-all duration-200 bg-white"
                   >
                     <option value="">Choose your country</option>
@@ -913,18 +925,43 @@ const Address = () => {
                     ))}
                   </select>
                 </div>
+                {statesOfCountry.length > 0 && (
+                  <div>
+                    <label className="block text-[13px] font-medium text-gray-500 mb-1.5">State / Province</label>
+                    <select
+                      value={selectedState}
+                      onChange={(e) => { setSelectedState(e.target.value); setCity(""); }}
+                      className="w-full h-[48px] px-3 rounded-lg border border-gray-200 text-gray-800 text-[14px] focus:outline-none focus:border-[#3321c8] focus:ring-[3px] focus:ring-[#3321c8]/10 transition-all duration-200 bg-white"
+                    >
+                      <option value="">Choose your state</option>
+                      {statesOfCountry.map((item) => (
+                        <option key={item.isoCode} value={item.isoCode}>{item.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
                 <div>
                   <label className="block text-[13px] font-medium text-gray-500 mb-1.5">City</label>
-                  <select
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                    className="w-full h-[48px] px-3 rounded-lg border border-gray-200 text-gray-800 text-[14px] focus:outline-none focus:border-[#3321c8] focus:ring-[3px] focus:ring-[#3321c8]/10 transition-all duration-200 bg-white"
-                  >
-                    <option value="">Choose your city</option>
-                    {State && State.getStatesOfCountry(country).map((item) => (
-                      <option key={item.isoCode} value={item.isoCode}>{item.name}</option>
-                    ))}
-                  </select>
+                  {citiesOfState.length > 0 ? (
+                    <select
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                      className="w-full h-[48px] px-3 rounded-lg border border-gray-200 text-gray-800 text-[14px] focus:outline-none focus:border-[#3321c8] focus:ring-[3px] focus:ring-[#3321c8]/10 transition-all duration-200 bg-white"
+                    >
+                      <option value="">Choose your city</option>
+                      {citiesOfState.map((item) => (
+                        <option key={item.name} value={item.name}>{item.name}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                      placeholder="Enter your city"
+                      className="w-full h-[48px] px-4 rounded-lg border border-gray-200 text-gray-800 text-[14px] placeholder-gray-400 focus:outline-none focus:border-[#3321c8] focus:ring-[3px] focus:ring-[#3321c8]/10 transition-all duration-200"
+                    />
+                  )}
                 </div>
                 <div>
                   <label className="block text-[13px] font-medium text-gray-500 mb-1.5">Address Line 1</label>
@@ -979,7 +1016,8 @@ const Address = () => {
                   {item.addressType}
                 </span>
               </div>
-              <p className="text-[14px] text-gray-700 font-medium">{item.address1} {item.address2}</p>
+              <p className="text-[14px] text-gray-700 font-medium">{item.address1}{item.address2 ? `, ${item.address2}` : ""}</p>
+              <p className="text-[13px] text-gray-500 mt-0.5">{item.city}{item.country ? `, ${item.country}` : ""}{item.zipCode ? ` - ${item.zipCode}` : ""}</p>
               <p className="text-[13px] text-gray-400 mt-0.5">{user?.phoneNumber}</p>
             </div>
             <button onClick={() => handleDelete(item)}

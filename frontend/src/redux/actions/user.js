@@ -54,7 +54,7 @@ export const signup = (name, email, password, avatar) => async (dispatch) => {
       email,
       password,
       avatar,
-    });
+    }, { withCredentials: true });
     dispatch(signupSuccess(data.message));
   } catch (error) {
     dispatch(signupFail(error?.response?.data?.message || "Signup failed"));
@@ -67,7 +67,7 @@ export const activation = (activation_token) => async (dispatch) => {
     dispatch(activationRequest());
     const { data } = await axios.post(`${server}/user/activation`, {
       activation_token,
-    });
+    }, { withCredentials: true });
     localStorage.setItem("token", data.token);
     setAuthToken();
     dispatch(activationSuccess(data.user));
@@ -84,7 +84,7 @@ export const login = (email, password) => async (dispatch) => {
     const { data } = await axios.post(`${server}/user/login-user`, {
       email,
       password,
-    });
+    }, { withCredentials: true });
     localStorage.setItem("token", data.token);
     setAuthToken();
     dispatch(loginSuccess(data.user));
@@ -112,14 +112,22 @@ export const loadUser = () => async (dispatch) => {
 // load seller
 export const loadSeller = () => async (dispatch) => {
   try {
-    setAuthToken();
     dispatch(loadSellerRequest());
-    const { data } = await axios.get(`${server}/shop/getSeller`, {
+    // Use seller_token specifically (separate from user token)
+    const sellerToken = localStorage.getItem("seller_token");
+    const config = {
       withCredentials: true,
-    });
+    };
+    if (sellerToken) {
+      config.headers = {
+        Authorization: `Bearer ${sellerToken}`,
+      };
+    }
+    const { data } = await axios.get(`${server}/shop/getSeller`, config);
     dispatch(loadSellerSuccess(data.seller));
   } catch (error) {
     dispatch(loadSellerFail(error?.response?.data?.message || "Failed to load seller"));
+    localStorage.removeItem("seller_token");
   }
 };
 
@@ -211,6 +219,7 @@ export const logoutUserAction = () => async (dispatch) => {
     // ignore logout API errors
   } finally {
     localStorage.removeItem("token");
+    localStorage.removeItem("seller_token");
     delete axios.defaults.headers.common["Authorization"];
     dispatch(logoutUser());
   }

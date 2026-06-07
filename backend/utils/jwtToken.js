@@ -11,9 +11,13 @@ const sendToken = (user, statusCode, res) => {
     secure: isProd,
   };
 
+  // Sanitize: remove password from user object before sending in response
+  const userObj = user.toObject ? user.toObject() : { ...user._doc };
+  delete userObj.password;
+
   res.status(statusCode).cookie("token", token, options).json({
     success: true,
-    user,
+    user: userObj,
     token,
   });
 };
