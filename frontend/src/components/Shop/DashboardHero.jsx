@@ -417,12 +417,6 @@ const DashboardHero = () => {
             <h1>Welcome back, {seller?.name || "Seller"}</h1>
             <p>{today}</p>
           </div>
-          <img
-            className="dash-greeting-avatar"
-            src={seller?.avatar?.url || "https://cdn-icons-png.flaticon.com/512/149/149071.png"}
-            onError={(e) => { e.target.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png"; }}
-            alt=""
-          />
         </div>
 
         {/* KPI Cards */}

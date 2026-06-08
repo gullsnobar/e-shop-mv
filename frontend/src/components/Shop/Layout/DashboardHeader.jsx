@@ -9,7 +9,7 @@ import { BiMessageSquareDetail } from "react-icons/bi";
 const DashboardHeader = () => {
   const { seller } = useSelector((state) => state.seller);
   return (
-    <div className="w-full h-[70px] bg-white border-b border-gray-100 sticky top-0 left-0 z-30 flex items-center justify-between px-6">
+    <div className="w-full h-[70px] bg-white sticky top-0 left-0 z-30 flex items-center justify-between px-6">
       <div>
         <Link to="/dashboard" className="flex items-center gap-1">
           <span className="text-[22px] font-bold text-orange-400">Shop</span>

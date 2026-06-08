@@ -25,7 +25,7 @@ const DashboardSideBar = ({ active }) => {
   ];
 
   return (
-    <div className="w-full h-full bg-white border-r border-gray-100 overflow-y-auto py-4">
+    <div className="w-full h-full bg-white overflow-y-auto py-4">
       {menuItems.map((item) => {
         const Icon = item.icon;
         const isActive = active === item.id;

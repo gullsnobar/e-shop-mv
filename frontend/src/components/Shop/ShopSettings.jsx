@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { server } from "../../server";
 import { AiOutlineCamera } from "react-icons/ai";
-import { FiMapPin, FiPhone, FiHash, FiEdit3, FiSave } from "react-icons/fi";
+import { FiMapPin, FiPhone, FiHash, FiEdit3, FiSave, FiLogOut, FiTrash2 } from "react-icons/fi";
 import { BiStore } from "react-icons/bi";
 import { MdOutlineDescription } from "react-icons/md";
 import axios from "axios";
@@ -18,8 +19,13 @@ const ShopSettings = () => {
   const [phoneNumber, setPhoneNumber] = useState(seller?.phoneNumber || "");
   const [zipCode, setZipcode] = useState(seller?.zipCode || "");
   const [updating, setUpdating] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteText, setDeleteText] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleImage = async (e) => {
     const file = e.target.files?.[0];
@@ -63,6 +69,35 @@ const ShopSettings = () => {
       toast.error(error?.response?.data?.message || "Failed to update shop info");
     } finally {
       setUpdating(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    try {
+      await axios.get(`${server}/shop/logout`, { withCredentials: true });
+      toast.success("Logged out successfully!");
+      navigate("/shop-login");
+      window.location.reload();
+    } catch (error) {
+      toast.error("Failed to logout");
+    } finally {
+      setLoggingOut(false);
+    }
+  };
+
+  const handleDeleteShop = async () => {
+    if (deleteText !== "DELETE") return;
+    setDeleting(true);
+    try {
+      await axios.delete(`${server}/shop/delete-shop`, { withCredentials: true });
+      toast.success("Shop deleted successfully!");
+      navigate("/shop-login");
+      window.location.reload();
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to delete shop");
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -158,12 +193,13 @@ const ShopSettings = () => {
         }
 
         /* Form Card */
-        .settings-form-card {
+        .settings-card {
           background: #fff;
           border-radius: 16px;
           box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.03);
           border: 1px solid #f3f4f6;
           padding: 28px;
+          margin-bottom: 24px;
         }
         .settings-form-title {
           font-size: 16px;
@@ -292,6 +328,160 @@ const ShopSettings = () => {
           transform: none;
         }
 
+        /* Logout & Danger */
+        .settings-logout-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 12px 28px;
+          background: #fff;
+          color: #374151;
+          border: 1.5px solid #e5e7eb;
+          border-radius: 10px;
+          font-size: 14px;
+          font-weight: 600;
+          font-family: 'Inter', sans-serif;
+          cursor: pointer;
+          transition: all 0.15s;
+          width: 100%;
+          justify-content: center;
+        }
+        .settings-logout-btn:hover {
+          background: #f9fafb;
+          border-color: #d1d5db;
+        }
+        .settings-logout-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .settings-danger-card {
+          background: #fff;
+          border-radius: 16px;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.03);
+          border: 1.5px solid #fecaca;
+          padding: 28px;
+          margin-bottom: 24px;
+        }
+        .settings-danger-title {
+          font-size: 16px;
+          font-weight: 700;
+          color: #dc2626;
+          margin: 0 0 8px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+        .settings-danger-desc {
+          font-size: 13px;
+          color: #6b7280;
+          margin: 0 0 20px;
+          line-height: 1.5;
+        }
+        .settings-delete-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 12px 28px;
+          background: #fff;
+          color: #dc2626;
+          border: 1.5px solid #fecaca;
+          border-radius: 10px;
+          font-size: 14px;
+          font-weight: 600;
+          font-family: 'Inter', sans-serif;
+          cursor: pointer;
+          transition: all 0.15s;
+        }
+        .settings-delete-btn:hover {
+          background: #fef2f2;
+          border-color: #dc2626;
+        }
+
+        /* Delete Confirm Modal */
+        .settings-modal-overlay {
+          position: fixed;
+          top: 0; left: 0;
+          width: 100%; height: 100%;
+          background: rgba(0,0,0,0.4);
+          backdrop-filter: blur(4px);
+          z-index: 20000;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 20px;
+        }
+        .settings-modal {
+          width: 100%;
+          max-width: 440px;
+          background: #fff;
+          border-radius: 16px;
+          box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+          padding: 28px;
+        }
+        .settings-modal h2 {
+          font-size: 18px;
+          font-weight: 700;
+          color: #dc2626;
+          margin: 0 0 12px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+        .settings-modal p {
+          font-size: 14px;
+          color: #6b7280;
+          margin: 0 0 20px;
+          line-height: 1.6;
+        }
+        .settings-modal-input {
+          width: 100%;
+          padding: 12px 14px;
+          border: 1.5px solid #fecaca;
+          border-radius: 10px;
+          font-size: 14px;
+          font-family: 'Inter', sans-serif;
+          color: #111827;
+          background: #fff;
+          outline: none;
+          box-sizing: border-box;
+          margin-bottom: 20px;
+          transition: border-color 0.2s;
+        }
+        .settings-modal-input:focus { border-color: #dc2626; }
+        .settings-modal-actions {
+          display: flex;
+          gap: 12px;
+          justify-content: flex-end;
+        }
+        .settings-modal-cancel {
+          padding: 10px 24px;
+          background: #fff;
+          border: 1.5px solid #e5e7eb;
+          border-radius: 10px;
+          font-size: 14px;
+          font-weight: 600;
+          color: #374151;
+          cursor: pointer;
+          font-family: 'Inter', sans-serif;
+          transition: all 0.15s;
+        }
+        .settings-modal-cancel:hover { background: #f9fafb; }
+        .settings-modal-confirm {
+          padding: 10px 24px;
+          background: #dc2626;
+          border: none;
+          border-radius: 10px;
+          font-size: 14px;
+          font-weight: 600;
+          color: #fff;
+          cursor: pointer;
+          font-family: 'Inter', sans-serif;
+          transition: all 0.15s;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+        }
+        .settings-modal-confirm:hover { background: #b91c1c; }
+        .settings-modal-confirm:disabled { opacity: 0.5; cursor: not-allowed; }
+
         /* Spinner */
         @keyframes spin {
           to { transform: rotate(360deg); }
@@ -301,6 +491,14 @@ const ShopSettings = () => {
           height: 16px;
           border: 2px solid rgba(255,255,255,0.3);
           border-top-color: #fff;
+          border-radius: 50%;
+          animation: spin 0.6s linear infinite;
+        }
+        .settings-spinner-dark {
+          width: 16px;
+          height: 16px;
+          border: 2px solid rgba(0,0,0,0.15);
+          border-top-color: #374151;
           border-radius: 50%;
           animation: spin 0.6s linear infinite;
         }
@@ -335,7 +533,7 @@ const ShopSettings = () => {
         </div>
 
         {/* Form Card */}
-        <div className="settings-form-card">
+        <div className="settings-card">
           <h3 className="settings-form-title">
             <FiEdit3 size={17} />
             Shop Information
@@ -447,7 +645,98 @@ const ShopSettings = () => {
             </div>
           </form>
         </div>
+
+        {/* Logout */}
+        <div className="settings-card">
+          <h3 className="settings-form-title">
+            <FiLogOut size={17} />
+            Session
+          </h3>
+          <p style={{ fontSize: 13, color: "#6b7280", margin: "0 0 16px" }}>
+            Log out of your seller dashboard. You can log back in anytime.
+          </p>
+          <button
+            className="settings-logout-btn"
+            onClick={handleLogout}
+            disabled={loggingOut}
+          >
+            {loggingOut ? (
+              <>
+                <span className="settings-spinner-dark" />
+                Logging out...
+              </>
+            ) : (
+              <>
+                <FiLogOut size={16} />
+                Log Out
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Danger Zone */}
+        <div className="settings-danger-card">
+          <h3 className="settings-danger-title">
+            <FiTrash2 size={17} />
+            Danger Zone
+          </h3>
+          <p className="settings-danger-desc">
+            Permanently delete your shop and all associated data including products, events, and coupons. This action cannot be undone.
+          </p>
+          <button
+            className="settings-delete-btn"
+            onClick={() => setShowDeleteConfirm(true)}
+          >
+            <FiTrash2 size={15} />
+            Delete Shop
+          </button>
+        </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="settings-modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) { setShowDeleteConfirm(false); setDeleteText(""); } }}>
+          <div className="settings-modal">
+            <h2><FiTrash2 size={18} /> Delete Shop</h2>
+            <p>
+              This will permanently delete your shop <strong>"{seller?.name}"</strong> along with all products, events, coupons, and associated data. This action is <strong>irreversible</strong>.
+            </p>
+            <p style={{ fontSize: 13, color: "#374151", margin: "0 0 8px", fontWeight: 600 }}>
+              Type <span style={{ color: "#dc2626", fontFamily: "monospace", background: "#fef2f2", padding: "2px 6px", borderRadius: 4 }}>DELETE</span> to confirm:
+            </p>
+            <input
+              type="text"
+              className="settings-modal-input"
+              value={deleteText}
+              onChange={(e) => setDeleteText(e.target.value)}
+              placeholder='Type "DELETE" here'
+              autoFocus
+            />
+            <div className="settings-modal-actions">
+              <button className="settings-modal-cancel" onClick={() => { setShowDeleteConfirm(false); setDeleteText(""); }}>
+                Cancel
+              </button>
+              <button
+                className="settings-modal-confirm"
+                disabled={deleteText !== "DELETE" || deleting}
+                onClick={handleDeleteShop}
+              >
+                {deleting ? (
+                  <>
+                    <span className="settings-spinner" />
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <FiTrash2 size={14} />
+                    Delete Permanently
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

@@ -378,4 +378,76 @@ router.delete(
   })
 );
 
+// delete shop
+router.delete(
+  "/delete-shop",
+  isSeller,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const shopId = req.seller._id;
+      const shop = await Shop.findById(shopId);
+
+      if (!shop) {
+        return next(new ErrorHandler("Shop not found", 404));
+      }
+
+      // Delete avatar from cloudinary if exists
+      if (shop.avatar && shop.avatar.public_id) {
+        await cloudinary.v2.uploader.destroy(shop.avatar.public_id);
+      }
+
+      // Delete associated products
+      const Product = require("../model/product");
+      const products = await Product.find({ shopId });
+      for (const product of products) {
+        if (product.images && product.images.length > 0) {
+          for (const img of product.images) {
+            if (img.public_id) {
+              await cloudinary.v2.uploader.destroy(img.public_id);
+            }
+          }
+        }
+      }
+      await Product.deleteMany({ shopId });
+
+      // Delete associated events
+      const Event = require("../model/event");
+      const events = await Event.find({ shopId });
+      for (const event of events) {
+        if (event.images && event.images.length > 0) {
+          for (const img of event.images) {
+            if (img.public_id) {
+              await cloudinary.v2.uploader.destroy(img.public_id);
+            }
+          }
+        }
+      }
+      await Event.deleteMany({ shopId });
+
+      // Delete associated coupons
+      const CoupounCode = require("../model/coupounCode");
+      await CoupounCode.deleteMany({ shopId });
+
+      // Delete the shop
+      await Shop.findByIdAndDelete(shopId);
+
+      // Clear cookie
+      const isProd = process.env.NODE_ENV === "PRODUCTION";
+      res.cookie("seller_token", null, {
+        expires: new Date(Date.now()),
+        httpOnly: true,
+        sameSite: isProd ? "none" : "lax",
+        secure: isProd,
+      });
+
+      res.status(200).json({
+        success: true,
+        message: "Shop deleted successfully!",
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
 module.exports = router;
