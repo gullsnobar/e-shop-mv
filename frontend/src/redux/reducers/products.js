@@ -5,6 +5,7 @@ const initialState = {
   shopProducts: [],
   isLoading: false,
   error: null,
+  success: false,
 };
 
 const productsSlice = createSlice({
@@ -35,9 +36,26 @@ const productsSlice = createSlice({
       state.isLoading = false;
       state.error = action.payload;
     },
+    createProductSuccess: (state) => {
+      state.isLoading = false;
+      state.success = true;
+      state.error = null;
+    },
+    clearProductState: (state) => {
+      state.success = false;
+      state.error = null;
+    },
   },
 });
 
-export const { productsLoading, productsSuccess, productsError, getAllProductsShopRequest, getAllProductsShopSuccess, getAllProductsShopFailed } =
-  productsSlice.actions;
+export const {
+  productsLoading,
+  productsSuccess,
+  productsError,
+  getAllProductsShopRequest,
+  getAllProductsShopSuccess,
+  getAllProductsShopFailed,
+  createProductSuccess,
+  clearProductState,
+} = productsSlice.actions;
 export const productsReducer = productsSlice.reducer;

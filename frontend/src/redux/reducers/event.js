@@ -4,6 +4,7 @@ const initialState = {
   events: [],
   isLoading: false,
   error: null,
+  success: false,
 };
 
 const eventSlice = createSlice({
@@ -12,6 +13,8 @@ const eventSlice = createSlice({
   reducers: {
     eventsLoading: (state) => {
       state.isLoading = true;
+      state.success = false;
+      state.error = null;
     },
     eventsSuccess: (state, action) => {
       state.isLoading = false;
@@ -21,9 +24,20 @@ const eventSlice = createSlice({
     eventsError: (state, action) => {
       state.isLoading = false;
       state.error = action.payload;
+      state.success = false;
+    },
+    createEventSuccess: (state, action) => {
+      state.isLoading = false;
+      state.success = true;
+      state.error = null;
+    },
+    clearEventState: (state) => {
+      state.success = false;
+      state.error = null;
     },
   },
 });
 
-export const { eventsLoading, eventsSuccess, eventsError } = eventSlice.actions;
+export const { eventsLoading, eventsSuccess, eventsError, createEventSuccess, clearEventState } =
+  eventSlice.actions;
 export const eventsReducer = eventSlice.reducer;

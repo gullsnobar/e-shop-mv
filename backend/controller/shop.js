@@ -222,9 +222,11 @@ router.put(
     try {
       let existsSeller = await Shop.findById(req.seller._id);
 
-        const imageId = existsSeller.avatar.public_id;
+        const imageId = existsSeller.avatar?.public_id;
 
-        await cloudinary.v2.uploader.destroy(imageId);
+        if (imageId) {
+          await cloudinary.v2.uploader.destroy(imageId);
+        }
 
         const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
           folder: "avatars",
@@ -257,7 +259,7 @@ router.put(
     try {
       const { name, description, address, phoneNumber, zipCode } = req.body;
 
-      const shop = await Shop.findOne(req.seller._id);
+      const shop = await Shop.findById(req.seller._id);
 
       if (!shop) {
         return next(new ErrorHandler("User not found", 400));

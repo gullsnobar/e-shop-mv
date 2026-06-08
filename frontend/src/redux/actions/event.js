@@ -1,15 +1,15 @@
 import axios from "axios";
 import { server } from "../../server";
 import { productData } from "../../static/data";
-import { eventsLoading, eventsSuccess, eventsError } from "../reducers/event";
+import { eventsLoading, eventsSuccess, eventsError, createEventSuccess } from "../reducers/event";
 
 // create event
 export const createevent = (data) => async (dispatch) => {
   try {
     dispatch(eventsLoading());
 
-    const { d } = await axios.post(`${server}/event/create-event`, data);
-    dispatch(eventsSuccess(d?.event || []));
+    const response = await axios.post(`${server}/event/create-event`, data);
+    dispatch(createEventSuccess(response.data?.event));
   } catch (error) {
     dispatch(eventsError(error?.response?.data?.message || "Failed to create event"));
   }

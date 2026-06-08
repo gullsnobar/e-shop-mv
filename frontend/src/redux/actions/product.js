@@ -4,6 +4,7 @@ import {
   getAllProductsShopRequest,
   getAllProductsShopSuccess,
   getAllProductsShopFailed,
+  createProductSuccess,
 } from "../reducers/products";
 
 // get all products of a shop
@@ -40,14 +41,15 @@ export const createProduct = (newForm) => async (dispatch) => {
   try {
     dispatch(getAllProductsShopRequest());
 
-    const { data } = await axios.post(
+    await axios.post(
       `${server}/product/create-product`,
       newForm,
       { withCredentials: true }
     );
 
-    dispatch(getAllProductsShopSuccess(data.products));
+    dispatch(createProductSuccess());
   } catch (error) {
     dispatch(getAllProductsShopFailed(error.response?.data?.message || "Something went wrong"));
   }
 };
+
