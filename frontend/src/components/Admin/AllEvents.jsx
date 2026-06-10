@@ -1,3 +1,4 @@
+
 import { Button } from "@material-ui/core";
 import { DataGrid } from "@material-ui/data-grid";
 import axios from "axios";
@@ -5,6 +6,8 @@ import React, { useEffect, useState } from "react";
 import {  AiOutlineEye } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import { server } from "../../server";
+
+// here is code
 
 const AllEvents = () => {
   const [events, setEvents] = useState([]);
@@ -68,6 +71,7 @@ const AllEvents = () => {
 
   events &&
     events.forEach((item) => {
+
       row.push({
         id: item._id,
         name: item.name,
