@@ -69,7 +69,7 @@ const AllProducts = () => {
       },
     },
   ];
-
+  
   const row = [];
 
   data &&
